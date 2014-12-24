@@ -3,3 +3,7 @@ build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
+DataManager.iml
+DataManager.ipr
+DataManager.iws
+.DS_Store

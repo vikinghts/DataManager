@@ -1,0 +1,227 @@
+buildscript {
+    repositories {
+        maven { url 'http://jcenter.bintray.com' }
+        mavenCentral()
+        maven {
+            name 'Shadow'
+            url 'http://dl.bintray.com/content/johnrengelman/gradle-plugins'
+        }
+    }
+
+    dependencies {
+        classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.4'
+        classpath 'org.hidetake:gradle-ssh-plugin:0.3.0'
+        classpath 'org.gradle.plugins:shadow:0.7.4'
+
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "2.0"
+}
+
+version = 0.1
+
+apply plugin: 'cargo'
+apply plugin: 'ssh'
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'jacoco'
+apply plugin: 'checkstyle'
+apply plugin: "sonar-runner"
+apply plugin: 'maven-publish'
+apply plugin: 'shadow'
+
+
+
+repositories {
+    mavenCentral()
+}
+
+//find out howto make groovy directories in the systemTest
+sourceSets {
+    systemTest
+    performanceTest
+    integrationTest
+    resources
+}
+
+dependencies {
+    compile localGroovy()
+    compile 'asm:asm:3.3.1'
+    compile 'com.sun.jersey:jersey-bundle:1.17.1'
+    compile "joda-time:joda-time:2.2"
+    compile 'org.rxtx:rxtx:2.1.7'
+    compile 'javax.servlet:servlet-api:2.5'
+    compile 'postgresql:postgresql:9.0-801.jdbc4'
+    compile(group: 'log4j', name: 'log4j', version: '1.2.17')
+    compile(group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.6.6') // van nexus apd
+    compile(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.5')
+    testCompile localGroovy()
+    testCompile "org.testng:testng:6.3.1"
+    testCompile "junit:junit:4.9"
+    testCompile "org.mockito:mockito-all:1.9.5"
+    integrationTestCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.5.2'
+    integrationTestCompile configurations.testCompile
+    integrationTestRuntime configurations.testRuntime
+    systemTestCompile configurations.testCompile
+    systemTestRuntime configurations.testRuntime
+    performanceTestCompile configurations.testCompile
+    performanceTestRuntime configurations.testRuntime
+
+}
+
+jacocoTestReport {
+    reports {
+        html.enabled true
+    }
+}
+
+task systemTest(type: Test) {
+    doFirst{
+        //project.cargo.deployable.context = "smartMeterSystemTest"
+        //cargoReDeployRemote.execute()
+    }
+    testClassesDir = sourceSets.systemTest.output.classesDir
+    classpath = sourceSets.systemTest.runtimeClasspath
+    reports.junitXml.destination = file("${reporting.baseDir}/systemTest")
+    reports.html.destination = file("${reporting.baseDir}/systemTest")
+}
+
+
+task performanceTest(type: Test) {
+    testClassesDir = sourceSets.performanceTest.output.classesDir
+    classpath = sourceSets.performanceTest.runtimeClasspath
+    reports.junitXml.destination = file("${reporting.baseDir}/performanceTest")
+    reports.html.destination = file("${reporting.baseDir}/performanceTest")
+}
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    reports.junitXml.destination = file("${reporting.baseDir}/integrationTest")
+    reports.html.destination = file("${reporting.baseDir}/integrationTest")
+}
+
+task liveTestGroup(dependsOn: ['systemTest', 'performanceTest', 'integrationTest'])
+//to start/stop tomcat for test runs
+liveTestGroup.dependsOn war, cargoStartLocal
+liveTestGroup.finalizedBy cargoStopLocal
+
+sonarRunner {
+    sonarProperties {
+        property "sonar.jacoco.reportPath", "$buildDir/jacoco/test.exec"
+    }
+}
+
+
+task "createProjectStructure" << {
+    sourceSets*.java.srcDirs*.each { it.mkdirs() }
+    sourceSets*.groovy.srcDirs*.each { it.mkdirs() }
+    sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+}
+
+jar {
+    manifest {
+        attributes("Implementation-Title": "Collect",
+                "Manifest-version": version,
+                "Main-Class": "com.soldev.Collect")
+    }
+}
+
+ext {
+    SSH_PRIVATE_KEY = "/.ssh/id_rsa"
+}
+
+ssh { knownHosts = allowAnyHosts }
+
+remotes {
+    odin {
+        role('tomcatServer')
+        identity = file(System.getProperty('user.home') + SSH_PRIVATE_KEY)
+        def envPort = System.getenv("DataManager") ?: "1"
+        port = envPort.toInteger()
+        host = System.getenv("DataManager") ?: "dummy"
+        user = System.getenv("DataManager") ?: "dummy"
+    }
+}
+
+task uploadFiles(type: SshTask, dependsOn: "jar") {
+    description "Upload the toBeTransPorted to the tomcat ROOT directory on the remote tomcat server"
+    session(remotes.odin) {
+        def localDir = "build/libs/DataCollector-0.1.jar"
+        def remoteDir = "/tmp"
+        put(localDir, remoteDir)
+    }
+}
+
+task runUploadedJar(type: SshTask, dependsOn: "uploadFiles") {
+
+    description "Create static directory on tomcat to service static content"
+    session(remotes.odin) {
+        execute("java -jar /tmp/DataManager-0.1.jar")
+    }
+}
+
+
+artifacts{
+    archives jar
+}
+
+uploadArchives {
+    repositories {
+        flatDir {
+            dirs 'build/repos'
+        }
+    }
+}
+
+/*
+publishing {
+    publications {
+        maven(MavenPublication){
+            from components.web
+            groupId = project.group
+            version = project.version + '-SNAPSHOT'
+        }
+    }
+    repositories {
+        maven {
+            url "${artifactory_uploadContextUrl}/${ExternalRepo}"
+            credentials {
+                username = "${System.getenv().artifactory_push_user}"
+                password = "${System.getenv().artifactory_push_password}"
+            }
+        }
+    }
+}
+*/
+
+
+task stopAndRemoveOldDockerContainer(type: Exec) {
+    def dockerCommand = new File('/tmp/dockerCommand.sh')
+    dockerCommand.write('/usr/local/bin/docker rm -f $(/usr/local/bin/docker ps -q -f name=datamanager)')
+    environment 'DOCKER_HOST', DOCKER_HOST
+    commandLine 'sh', '/tmp/dockerCommand.sh'
+}
+
+
+task copyJarDocker(type: Copy, dependsOn: ["jar", "shadow"]) {
+    from "build/libs"
+    into 'docker'
+}
+
+task buildDockerContainer(type: Exec, dependsOn: "copyJarDocker") {
+    workingDir 'docker/'
+    environment 'DOCKER_HOST', DOCKER_HOST
+    commandLine '/usr/local/bin/docker', 'build', '-t', "datamanager:${version}", '.'
+}
+
+task runDockerContainer(type: Exec, dependsOn: "buildDockerContainer") {
+    environment 'DOCKER_HOST', DOCKER_HOST
+    // to expose port to outside world:  '-p', '10022:22',
+    // to make a usb to serial adapeter available: '--privileged', '-v', '/dev/ttyUSB0:/dev/ttyUSB0'
+    commandLine '/usr/local/bin/docker', 'run', '--name', "datamanager-run-${version}", '-i', '-t', "datamanager:${version}"
+}
