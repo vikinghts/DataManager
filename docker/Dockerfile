@@ -8,13 +8,13 @@ run apt-get -y install openjdk-7-jdk
 run echo 'export JAVA_HOME=/usr/lib/jvm/jre-1.7.0-openjdk.x86_64' > /etc/profile.d/java.sh
 run apt-get -y install openssh-server
 run apt-get -y install tomcat7
-run service ssh start
 add DataManager-0.1.war /usr/share/tomcat7/webapps/DataManager-0.1-shadow.jar
 
 #to make the ubunto config stuff avaible
 run ln -s /etc/tomcat7 /usr/share/tomcat7/conf
 ENV CATALINA_HOME /usr/share/tomcat7
 # Launch Tomcat on startup
-CMD ${CATALINA_HOME}/bin/catalina.sh run
+add run.sh /tmp/run.sh
+CMD /tmp/run.sh
 
 EXPOSE 8080 22
