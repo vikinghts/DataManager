@@ -11,7 +11,6 @@ run apt-get -y install tomcat7
 add DataManager-0.1.war /var/lib/tomcat7/webapps/DataManager-0.1.war
 
 #to make the ubunto config stuff avaible
-run ln -s /etc/tomcat7 /usr/share/tomcat7/conf
 ENV CATALINA_HOME /usr/share/tomcat7
 ENV CATALINA_BASE /var/lib/tomcat7/
 # Launch Tomcat on startup
