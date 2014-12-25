@@ -17,4 +17,4 @@ ENV CATALINA_HOME /usr/share/tomcat7
 # Launch Tomcat on startup
 CMD ${CATALINA_HOME}/bin/catalina.sh run
 
-EXPOSE 8080
+EXPOSE 8080 22
