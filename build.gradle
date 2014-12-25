@@ -208,7 +208,7 @@ task stopAndRemoveOldDockerContainer(type: Exec) {
 }
 
 
-task copyJarDocker(type: Copy, dependsOn: ["jar", "shadow"]) {
+task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "shadow"]) {
     from "build/libs"
     into 'docker'
 }
