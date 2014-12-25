@@ -223,5 +223,5 @@ task runDockerContainer(type: Exec, dependsOn: "buildDockerContainer") {
     environment 'DOCKER_HOST', DOCKER_HOST
     // to expose port to outside world:  '-p', '10022:22',
     // to make a usb to serial adapeter available: '--privileged', '-v', '/dev/ttyUSB0:/dev/ttyUSB0'
-    commandLine '/usr/local/bin/docker', 'run', '-p', '3232:8080', '--name', "datamanager-run-${version}", '-i', '-t', "datamanager:${version}"
+    commandLine '/usr/local/bin/docker', 'run', '-p', '3232:8080',  '-p', '3222:22', '--name', "datamanager-run-${version}", '-i', '-t', "datamanager:${version}"
 }
