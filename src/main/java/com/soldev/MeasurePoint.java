@@ -2,14 +2,11 @@ package com.soldev;
 
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 /**
  * Created by kjansen on 27/12/14.
  */
 public class MeasurePoint {
-    DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMddHHmmss");
     private Integer currentPower = 0;
     private Integer totalGas = 0;
     private Integer totalDalPower = 0;
@@ -19,12 +16,20 @@ public class MeasurePoint {
     public MeasurePoint() {
     }
 
-    public MeasurePoint(int cpower, int tGas, int tDPower, int tPPower, DateTime mDateTime) {
-        this.currentPower = cpower;
-        this.totalGas = tGas;
+    public MeasurePoint(int tDPower, int tPPower, int cpower, int tGas, DateTime mDateTime) {
         this.totalDalPower = tDPower;
         this.totalPiekPower = tPPower;
+        this.currentPower = cpower;
+        this.totalGas = tGas;
         this.measureDateTime = mDateTime;
+    }
+
+    public void printContents() {
+        System.out.println(this.totalDalPower.toString());
+        System.out.println(this.totalPiekPower.toString());
+        System.out.println(this.currentPower.toString());
+        System.out.println(this.totalGas.toString());
+        System.out.println(this.measureDateTime.toString());
     }
 
     public int getCurrentPower() {
