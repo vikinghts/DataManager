@@ -25,11 +25,11 @@ public class MeasurePoint {
     }
 
     public void printContents() {
-        System.out.println(this.totalDalPower.toString());
-        System.out.println(this.totalPiekPower.toString());
-        System.out.println(this.currentPower.toString());
-        System.out.println(this.totalGas.toString());
-        System.out.println(this.measureDateTime.toString());
+        System.out.println("totalDalPower=" + this.totalDalPower.toString());
+        System.out.println("totalPiekPower=" + this.totalPiekPower.toString());
+        System.out.println("currentPower=" + this.currentPower.toString());
+        System.out.println("totalGas=" + this.totalGas.toString());
+        System.out.println("measureDateTime=" + this.measureDateTime.toString());
     }
 
     public int getCurrentPower() {
