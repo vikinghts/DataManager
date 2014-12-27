@@ -36,7 +36,7 @@ public class DataManager {
         System.out.println("Data Received: " + dataManagerBuilder.toString());
         JSONObject jsonObject = new JSONObject(dataManagerBuilder.toString());
         System.out.println(jsonObject);
-        System.out.println(jsonObject.getString("CurrentPower"));
+        System.out.println(jsonObject.getInt("CurrentPower"));
 
 
         // return HTTP response 200 in case of success
