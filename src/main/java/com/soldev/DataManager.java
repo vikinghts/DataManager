@@ -55,6 +55,8 @@ public class DataManager {
                 jsonObject.getInt("CurrentPower"),
                 jsonObject.getInt("totalGas"),
                 mDateTime);
+
+        measurePoint.printContents();
         
         // return HTTP response 200 in case of success
         return Response.status(200).entity(dataManagerBuilder.toString()).build();
