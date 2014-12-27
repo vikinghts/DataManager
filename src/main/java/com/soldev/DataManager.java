@@ -46,7 +46,7 @@ public class DataManager {
         System.out.println(jsonObject.getInt("CurrentPower"));
         System.out.println(jsonObject.getInt("totalGas"));
         System.out.println(jsonObject.getInt("MeasureDataTime"));
-        Integer iMDateTime = jsonObject.getInt("MeasureDataTime");
+        Long iMDateTime = jsonObject.getLong("MeasureDataTime");
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMddHHmmss");
         DateTime mDateTime = fmt.parseDateTime(iMDateTime.toString());
         // int cpower, int tGas, int tDPower, int tPPower, DateTime mDateTime
