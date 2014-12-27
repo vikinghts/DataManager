@@ -54,6 +54,8 @@ dependencies {
     compile 'com.sun.jersey:jersey-bundle:1.17.1'
     compile "joda-time:joda-time:2.2"
     compile 'org.rxtx:rxtx:2.1.7'
+    compile 'org.json:json:20131018'
+
     //compile 'javax.servlet:servlet-api:2.5'
     compile 'postgresql:postgresql:9.0-801.jdbc4'
     compile(group: 'log4j', name: 'log4j', version: '1.2.17')

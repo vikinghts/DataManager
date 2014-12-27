@@ -8,4 +8,5 @@ http://crunchify.com/create-very-simple-jersey-rest-service-and-send-json-data-f
 and here:
 http://www.mkyong.com/webservices/jax-rs/jersey-hello-world-example/
 
-
+For the hibernate part i got inspiration here:
+http://www.tutorialspoint.com/hibernate/hibernate_examples.htm

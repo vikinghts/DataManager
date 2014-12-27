@@ -1,11 +1,14 @@
 package com.soldev;
 
+import org.json.JSONObject;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 
 
 /**
@@ -31,6 +34,10 @@ public class DataManager {
             System.out.println("Error Parsing: - ");
         }
         System.out.println("Data Received: " + dataManagerBuilder.toString());
+        JSONObject jsonObject = new JSONObject(dataManagerBuilder.toString());
+        System.out.println(jsonObject);
+        JSONObject jsCurrentPower = jsonObject.getJSONObject("CurrentPower");
+        System.out.println(jsCurrentPower.toString());
 
         // return HTTP response 200 in case of success
         return Response.status(200).entity(dataManagerBuilder.toString()).build();
