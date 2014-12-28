@@ -19,7 +19,7 @@ public class DataManager {
 
     //public static void main(String[] args) {
     public void DataManager() {
-
+        System.out.println("DataManager init");
         try {
             factory = new Configuration().configure().buildSessionFactory();
         } catch (Throwable ex) {
