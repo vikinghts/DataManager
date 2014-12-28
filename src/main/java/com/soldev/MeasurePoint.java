@@ -7,10 +7,11 @@ import org.joda.time.DateTime;
  * Created by kjansen on 27/12/14.
  */
 public class MeasurePoint {
-    private Integer currentPower = 0;
-    private Integer totalGas = 0;
-    private Integer totalDalPower = 0;
-    private Integer totalPiekPower = 0;
+    private int id;
+    private int currentPower = 0;
+    private int totalGas = 0;
+    private int totalDalPower = 0;
+    private int totalPiekPower = 0;
     private DateTime measureDateTime;
 
     public MeasurePoint() {
@@ -25,11 +26,22 @@ public class MeasurePoint {
     }
 
     public void printContents() {
+        /*
+        System.out.println("id=" + this.id.toString());
         System.out.println("totalDalPower=" + this.totalDalPower.toString());
         System.out.println("totalPiekPower=" + this.totalPiekPower.toString());
         System.out.println("currentPower=" + this.currentPower.toString());
         System.out.println("totalGas=" + this.totalGas.toString());
+        */
         System.out.println("measureDateTime=" + this.measureDateTime.toString());
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getCurrentPower() {

@@ -4,16 +4,20 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="DataManager" table="EMPLOYEE">
+    <class name="com.soldev.MeasurePoint" table="MEASUREPOINT">
         <meta attribute="class-description">
             This class contains the measurePoint detail.
         </meta>
-
+        <id name="id" type="int" column="id">
+            <generator class="sequence">
+                <param name="sequence">measurepoint_id_seq</param>
+            </generator>
+        </id>
         <property name="totalDalPower" column="tDPower" type="int"/>
         <property name="totalPiekPower" column="tPPower" type="int"/>
         <property name="currentPower" column="cpower" type="int"/>
         <property name="totalGas" column="tGas" type="int"/>
-        <property name="measureDateTime" column="mDateTime" type="timestamp"/>
-
+        <property type="org.jadira.usertype.dateandtime.joda.PersistentDateTime" name="measureDateTime"
+                  column="mDateTime"/>
     </class>
 </hibernate-mapping>

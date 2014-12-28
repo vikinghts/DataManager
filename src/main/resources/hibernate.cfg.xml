@@ -20,9 +20,14 @@
         <property name="hibernate.connection.password">
             data4pass
         </property>
+        <!-- Echo all executed SQL to stdout -->
+        <property name="show_sql">true</property>
+
+        <!-- Drop and re-create the database schema on startup -->
+        <property name="hbm2ddl.auto">create</property>
 
         <!-- List of XML mapping files -->
-        <mapping resource="DataManager.hbm.xml"/>
+        <mapping resource="MeasurePoint.hbm.xml"/>
 
     </session-factory>
 </hibernate-configuration>
