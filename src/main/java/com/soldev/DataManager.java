@@ -17,7 +17,9 @@ public class DataManager {
     private static DataManager DM;
     private static SessionFactory factory;
 
-    public static void main(String[] args) {
+    //public static void main(String[] args) {
+    public void init() {
+
         try {
             factory = new Configuration().configure().buildSessionFactory();
         } catch (Throwable ex) {
