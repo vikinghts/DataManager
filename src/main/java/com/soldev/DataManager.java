@@ -14,7 +14,6 @@ import org.joda.time.DateTime;
  * This class parses the meter data and extracts it values to post them to a web socket.
  */
 public class DataManager {
-    private static DataManager DM;
     private static SessionFactory factory;
 
     //public static void main(String[] args) {
@@ -26,9 +25,11 @@ public class DataManager {
             System.err.println("Failed to create sessionFactory object." + ex);
             throw new ExceptionInInitializerError(ex);
         }
+        /*
         DM = new DataManager();
         DateTime mDateTime = new DateTime();
         Integer mPID1 = DM.addMeasurePoint(800, 487, 293, 20, mDateTime);
+        */
     }
 
     /* Method to CREATE an measurePoint in the database */
