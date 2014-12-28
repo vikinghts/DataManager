@@ -20,6 +20,11 @@ import java.io.InputStreamReader;
 @Path("/")
 public class JsonHandler {
 
+    public JsonHandler() {
+        DataManager dataManager = new DataManager();
+        dataManager.init();
+    }
+
     @POST
     @Path("/DataManagerService")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -51,8 +56,7 @@ public class JsonHandler {
         measurePoint.printContents();
         */
         // return HTTP response 200 in case of success
-        DataManager dataManager = new DataManager();
-        dataManager.init();
+
         return Response.status(200).entity(dataManagerBuilder.toString()).build();
     }
 
