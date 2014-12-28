@@ -20,10 +20,12 @@ import java.io.InputStreamReader;
 @Path("/")
 public class JsonHandler {
 
+    /*
     public JsonHandler() {
         DataManager dataManager = new DataManager();
         dataManager.init();
     }
+    */
 
     @POST
     @Path("/DataManagerService")

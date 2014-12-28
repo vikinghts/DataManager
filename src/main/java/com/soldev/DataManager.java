@@ -18,7 +18,7 @@ public class DataManager {
     private static SessionFactory factory;
 
     //public static void main(String[] args) {
-    public void init() {
+    public void DataManager() {
 
         try {
             factory = new Configuration().configure().buildSessionFactory();
