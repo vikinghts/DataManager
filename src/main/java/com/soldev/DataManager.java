@@ -1,5 +1,10 @@
 package com.soldev;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -20,6 +25,19 @@ import java.io.InputStreamReader;
  */
 @Path("/")
 public class DataManager {
+    private static DataManager DM;
+    private static SessionFactory factory;
+
+    public static void main(String[] args) {
+        try {
+            factory = new Configuration().configure().buildSessionFactory();
+        } catch (Throwable ex) {
+            System.err.println("Failed to create sessionFactory object." + ex);
+            throw new ExceptionInInitializerError(ex);
+        }
+        DM = new DataManager();
+
+    }
 
     @POST
     @Path("/DataManagerService")
@@ -37,27 +55,26 @@ public class DataManager {
             System.out.println("Error Parsing: - ");
         }
         System.out.println("Data Received: " + dataManagerBuilder.toString());
-        JSONObject jsonObject = new JSONObject(dataManagerBuilder.toString());
-        System.out.println(jsonObject);
         // structure
         // totalDalPower totalPiekPower CurrentPower totalGas MeasureDataTime
-        System.out.println(jsonObject.getInt("totalDalPower"));
-        System.out.println(jsonObject.getInt("totalPiekPower"));
-        System.out.println(jsonObject.getInt("CurrentPower"));
-        System.out.println(jsonObject.getInt("totalGas"));
-        System.out.println(jsonObject.getInt("MeasureDataTime"));
+        JSONObject jsonObject = new JSONObject(dataManagerBuilder.toString());
         Long iMDateTime = jsonObject.getLong("MeasureDataTime");
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMddHHmmss");
         DateTime mDateTime = fmt.parseDateTime(iMDateTime.toString());
-        // int cpower, int tGas, int tDPower, int tPPower, DateTime mDateTime
+        /*
         MeasurePoint measurePoint = new MeasurePoint(jsonObject.getInt("totalDalPower"),
                 jsonObject.getInt("totalPiekPower"),
                 jsonObject.getInt("CurrentPower"),
                 jsonObject.getInt("totalGas"),
                 mDateTime);
-
         measurePoint.printContents();
-        
+        */
+        Integer mPID1 = DM.addMeasurePoint(jsonObject.getInt("totalDalPower"),
+                jsonObject.getInt("totalPiekPower"),
+                jsonObject.getInt("CurrentPower"),
+                jsonObject.getInt("totalGas"),
+                mDateTime);
+
         // return HTTP response 200 in case of success
         return Response.status(200).entity(dataManagerBuilder.toString()).build();
     }
@@ -71,4 +88,24 @@ public class DataManager {
         return Response.status(200).entity(output).build();
 
     }
+
+    /* Method to CREATE an measurePoint in the database */
+    public Integer addMeasurePoint(int tDPower, int tPPower, int cpower, int tGas, DateTime mDateTime) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+        Integer measurePointID = null;
+        try {
+            tx = session.beginTransaction();
+            MeasurePoint measurePoint = new MeasurePoint(tDPower, tPPower, cpower, tGas, mDateTime);
+            measurePointID = (Integer) session.save(measurePoint);
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return measurePointID;
+    }
+
 }
