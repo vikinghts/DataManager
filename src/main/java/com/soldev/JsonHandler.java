@@ -63,13 +63,13 @@ public class JsonHandler {
         // return HTTP response 200 in case of success
         DataManager DM = new DataManager();
         DM.init();
-        /*
+
         Integer mPID1 = DM.addMeasurePoint(jsonObject.getInt("totalDalPower"),
                 jsonObject.getInt("totalPiekPower"),
                 jsonObject.getInt("CurrentPower"),
                 jsonObject.getInt("totalGas"),
                 mDateTime);
-                */
+
 
         return Response.status(200).entity(dataManagerBuilder.toString()).build();
     }
