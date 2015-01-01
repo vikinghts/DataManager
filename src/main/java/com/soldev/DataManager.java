@@ -70,9 +70,9 @@ public class DataManager {
         String response = "{\"AllMeasurePoints\":[";
         try {
             tx = session.beginTransaction();
-            List employees = session.createQuery("FROM MEASUREPOINT").list();
+            List measurePoints = session.createQuery("FROM MeasurePoint").list();
             for (Iterator iterator =
-                         employees.iterator(); iterator.hasNext(); ) {
+                         measurePoints.iterator(); iterator.hasNext(); ) {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
                 System.out.print("Measure Timestamp: " + measurePoint.getMeasureDateTime().toString());
                 Integer curPower = measurePoint.getCurrentPower();
