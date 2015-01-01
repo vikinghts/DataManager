@@ -20,15 +20,9 @@ import java.io.InputStreamReader;
 @Path("/")
 public class JsonHandler {
 
-
     public JsonHandler() {
         System.out.println("JsonHandler init");
-        /*
-        DataManager dataManager = new DataManager();
-        dataManager.init();
-        */
     }
-
 
     @POST
     @Path("/DataManagerService")
@@ -52,14 +46,6 @@ public class JsonHandler {
         Long iMDateTime = jsonObject.getLong("MeasureDataTime");
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMddHHmmss");
         DateTime mDateTime = fmt.parseDateTime(iMDateTime.toString());
-        /*
-        MeasurePoint measurePoint = new MeasurePoint(jsonObject.getInt("totalDalPower"),
-                jsonObject.getInt("totalPiekPower"),
-                jsonObject.getInt("CurrentPower"),
-                jsonObject.getInt("totalGas"),
-                mDateTime);
-        measurePoint.printContents();
-        */
         // return HTTP response 200 in case of success
         DataManager DM = DataManager.getInstance();
 
@@ -82,6 +68,21 @@ public class JsonHandler {
         return Response.status(200).entity(output).build();
 
     }
+
+    @GET
+    @Path("/getMesurePoints")
+    public Response amIAlive() {
+        DataManager DM = DataManager.getInstance();
+
+        String output = DM.listMeasurePoints();
+
+
+        //String output = "DataManger Is ALIVE : " + msg;
+
+        return Response.status(200).entity(output).build();
+
+    }
+
 }
 
 

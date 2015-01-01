@@ -7,6 +7,8 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.joda.time.DateTime;
 
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -16,24 +18,13 @@ import org.joda.time.DateTime;
 public class DataManager {
     private static SessionFactory factory;
 
-    /*
-    private static DataManager m_instance;
-    
-    private static class DataManagerHolder {
-        private static final DataManager m_instance = new DataManager();
-    }
-
-    public static DataManager getInstance(){
-        return m_instance;
-    }
-    */
-
     private static DataManager instance = null;
 
     protected DataManager() {
         // Exists only to defeat instantiation.
     }
 
+    //singleton to make sure we only have one datahandler.
     public static DataManager getInstance() {
         if (instance == null) {
             instance = new DataManager();
@@ -51,11 +42,6 @@ public class DataManager {
             System.err.println("Failed to create sessionFactory object." + ex);
             throw new ExceptionInInitializerError(ex);
         }
-        /*
-        DM = new DataManager();
-        DateTime mDateTime = new DateTime();
-        Integer mPID1 = DM.addMeasurePoint(800, 487, 293, 20, mDateTime);
-        */
     }
 
     /* Method to CREATE an measurePoint in the database */
@@ -75,6 +61,35 @@ public class DataManager {
             session.close();
         }
         return measurePointID;
+    }
+
+    /* Method to  READ all the employees */
+    public String listMeasurePoints() {
+        Session session = factory.openSession();
+        Transaction tx = null;
+        String response = "{\"AllMeasurePoints\":[";
+        try {
+            tx = session.beginTransaction();
+            List employees = session.createQuery("FROM MEASUREPOINT").list();
+            for (Iterator iterator =
+                         employees.iterator(); iterator.hasNext(); ) {
+                MeasurePoint measurePoint = (MeasurePoint) iterator.next();
+                System.out.print("Measure Timestamp: " + measurePoint.getMeasureDateTime().toString());
+                Integer curPower = measurePoint.getCurrentPower();
+                System.out.print("Current Power    : " + curPower.toString());
+                // totalDalPower totalPiekPower CurrentPower totalGas MeasureDataTime
+                //{"totalDalPower":953,"totalPiekPower":612,"CurrentPower":740,"totalGas":463158,"MeasureDataTime":20150101231620}
+                response.concat("{\"MeasureDataTime\":" + measurePoint.getMeasureDateTime().toString() + ",");
+                response.concat("\"CurrentPower\":" + curPower.toString() + "}");
+            }
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return response.concat("]}");
     }
 
 }
