@@ -76,7 +76,7 @@ public class DataManager {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
                 Integer curPower = measurePoint.getCurrentPower();
                 response = response + ("{\"MeasureDataTime\":" + measurePoint.getMeasureDateTime().toString() + ",");
-                response = response + ("\"CurrentPower\":" + curPower.toString() + "}");
+                response = response + ("\"CurrentPower\":" + curPower.toString() + "},");
             }
             tx.commit();
         } catch (HibernateException e) {
@@ -85,6 +85,8 @@ public class DataManager {
         } finally {
             session.close();
         }
+        //TODO Dirty fix by using json object
+        response = response.substring(0, response.length() - 1);
         System.out.print(response + "]}");
         return response.concat("]}");
     }
