@@ -16,8 +16,34 @@ import org.joda.time.DateTime;
 public class DataManager {
     private static SessionFactory factory;
 
+    /*
+    private static DataManager m_instance;
+    
+    private static class DataManagerHolder {
+        private static final DataManager m_instance = new DataManager();
+    }
+
+    public static DataManager getInstance(){
+        return m_instance;
+    }
+    */
+
+    private static DataManager instance = null;
+
+    protected DataManager() {
+        // Exists only to defeat instantiation.
+    }
+
+    public static DataManager getInstance() {
+        if (instance == null) {
+            instance = new DataManager();
+            instance.init();
+        }
+        return instance;
+    }
+
     //public static void main(String[] args) {
-    public void init() {
+    protected void init() {
         System.out.println("DataManager init");
         try {
             factory = new Configuration().configure().buildSessionFactory();

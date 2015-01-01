@@ -61,8 +61,7 @@ public class JsonHandler {
         measurePoint.printContents();
         */
         // return HTTP response 200 in case of success
-        DataManager DM = new DataManager();
-        DM.init();
+        DataManager DM = DataManager.getInstance();
 
         Integer mPID1 = DM.addMeasurePoint(jsonObject.getInt("totalDalPower"),
                 jsonObject.getInt("totalPiekPower"),
