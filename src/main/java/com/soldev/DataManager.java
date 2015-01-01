@@ -74,13 +74,14 @@ public class DataManager {
             for (Iterator iterator =
                          measurePoints.iterator(); iterator.hasNext(); ) {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
-                System.out.print("Measure Timestamp: " + measurePoint.getMeasureDateTime().toString());
+                //System.out.print("Measure Timestamp: " + measurePoint.getMeasureDateTime().toString());
                 Integer curPower = measurePoint.getCurrentPower();
-                System.out.print("Current Power    : " + curPower.toString());
+                //System.out.print("Current Power    : " + curPower.toString());
                 // totalDalPower totalPiekPower CurrentPower totalGas MeasureDataTime
                 //{"totalDalPower":953,"totalPiekPower":612,"CurrentPower":740,"totalGas":463158,"MeasureDataTime":20150101231620}
-                response.concat("{\"MeasureDataTime\":" + measurePoint.getMeasureDateTime().toString() + ",");
-                response.concat("\"CurrentPower\":" + curPower.toString() + "}");
+                response = response + ("{\"MeasureDataTime\":" + measurePoint.getMeasureDateTime().toString() + ",");
+                response = response + ("\"CurrentPower\":" + curPower.toString() + "}");
+                System.out.print(response);
             }
             tx.commit();
         } catch (HibernateException e) {
