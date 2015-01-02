@@ -75,7 +75,7 @@ public class DataManager {
                          measurePoints.iterator(); iterator.hasNext(); ) {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
                 Integer curPower = measurePoint.getCurrentPower();
-                response = response + ("{\"MeasureDataTime\":" + measurePoint.getMeasureDateTime().toString() + ",");
+                response = response + ("{\"MeasureDateTime\":" + measurePoint.getMeasureDateTime().toString() + ",");
                 response = response + ("\"CurrentPower\":" + curPower.toString() + "},");
             }
             tx.commit();
