@@ -98,7 +98,7 @@ public class DataManager {
         String response = "{\"AllMeasurePoints\":[";
         try {
             tx = session.beginTransaction();
-            List measurePoints = session.createQuery("select * FROM MeasurePoint where mdatetime >= now() - interval '7 days'").list();
+            List measurePoints = session.createQuery("select MeasurePoint.cpower,MeasurePoint.mDateTime  FROM MeasurePoint MeasurePoint where mdatetime >= now() - interval '7 days'").list();
             for (Iterator iterator =
                          measurePoints.iterator(); iterator.hasNext(); ) {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
@@ -125,7 +125,7 @@ public class DataManager {
         String response = "{\"AllMeasurePoints\":[";
         try {
             tx = session.beginTransaction();
-            List measurePoints = session.createQuery("select * FROM MeasurePoint where mdatetime >= now() - interval '1 days'").list();
+            List measurePoints = session.createQuery("select MeasurePoint.cpower,MeasurePoint.mDateTime  FROM MeasurePoint MeasurePoint where mdatetime >= now() - interval '1 days'").list();
             for (Iterator iterator =
                          measurePoints.iterator(); iterator.hasNext(); ) {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
