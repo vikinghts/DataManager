@@ -81,8 +81,8 @@ public class DataManager {
                          measurePoints.iterator(); iterator.hasNext(); ) {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
                 Integer curPower = measurePoint.getCurrentPower();
-                response = response + ("{\"" + MEASURE_DATE_TIME + "\":\"" + measurePoint.getMeasureDateTime().toString() + "\",");
-                response = response + (ESC_QUOTE + CURRENT_POWER + "\":" + curPower.toString() + "},");
+                response = response + ("{" + ESC_QUOTE + MEASURE_DATE_TIME + ESC_QUOTE + ":" + ESC_QUOTE + measurePoint.getMeasureDateTime().toString() + ESC_QUOTE + ",");
+                response = response + (ESC_QUOTE + CURRENT_POWER + ESC_QUOTE + ":" + curPower.toString() + "},");
             }
             tx.commit();
         } catch (HibernateException e) {
@@ -111,8 +111,8 @@ public class DataManager {
                          measurePoints.iterator(); iterator.hasNext(); ) {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
                 Integer curPower = measurePoint.getCurrentPower();
-                response = response + ("{\"" + MEASURE_DATE_TIME + "\":\"" + measurePoint.getMeasureDateTime().toString() + "\",");
-                response = response + (ESC_QUOTE + CURRENT_POWER + "\":" + curPower.toString() + "},");
+                response = response + ("{" + ESC_QUOTE + MEASURE_DATE_TIME + ESC_QUOTE + ":" + ESC_QUOTE + measurePoint.getMeasureDateTime().toString() + ESC_QUOTE + ",");
+                response = response + (ESC_QUOTE + CURRENT_POWER + ESC_QUOTE + ":" + curPower.toString() + "},");
             }
             tx.commit();
         } catch (HibernateException e) {
@@ -140,8 +140,8 @@ public class DataManager {
                          measurePoints.iterator(); iterator.hasNext(); ) {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
                 Integer curPower = measurePoint.getCurrentPower();
-                response = response + ("{\"" + MEASURE_DATE_TIME + "\":\"" + measurePoint.getMeasureDateTime().toString() + "\",");
-                response = response + (ESC_QUOTE + CURRENT_POWER + "\":" + curPower.toString() + "},");
+                response = response + ("{" + ESC_QUOTE + MEASURE_DATE_TIME + ESC_QUOTE + ":" + ESC_QUOTE + measurePoint.getMeasureDateTime().toString() + ESC_QUOTE + ",");
+                response = response + (ESC_QUOTE + CURRENT_POWER + ESC_QUOTE + ":" + curPower.toString() + "},");
             }
             tx.commit();
         } catch (HibernateException e) {
