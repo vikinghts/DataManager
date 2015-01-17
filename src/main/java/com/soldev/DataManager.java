@@ -33,7 +33,6 @@ public class DataManager {
         return instance;
     }
 
-    //public static void main(String[] args) {
     protected void init() {
         System.out.println("DataManager init");
         try {
