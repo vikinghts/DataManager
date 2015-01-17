@@ -4,6 +4,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -19,6 +21,8 @@ import java.io.InputStreamReader;
  */
 @Path("/")
 public class JsonHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(JsonHandler.class);
+
 
     public JsonHandler() {
         System.out.println("JsonHandler init");
@@ -37,9 +41,9 @@ public class JsonHandler {
                 dataManagerBuilder.append(line);
             }
         } catch (Exception e) {
-            System.out.println("Error Parsing: - ");
+            LOG.error("Error Parsing: - ");
         }
-        System.out.println("Data Received: " + dataManagerBuilder.toString());
+        LOG.debug("Data Received: " + dataManagerBuilder.toString());
         // structure
         // totalDalPower totalPiekPower CurrentPower totalGas MeasureDataTime
         JSONObject jsonObject = new JSONObject(dataManagerBuilder.toString());

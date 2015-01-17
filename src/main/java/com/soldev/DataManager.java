@@ -6,6 +6,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
@@ -16,8 +18,8 @@ import java.util.List;
  * This class parses the meter data and extracts it values to post them to a web socket.
  */
 public class DataManager {
+    private static final Logger LOG = LoggerFactory.getLogger(DataManager.class);
     private static SessionFactory factory;
-
     private static DataManager instance = null;
 
     protected DataManager() {
@@ -38,7 +40,7 @@ public class DataManager {
         try {
             factory = new Configuration().configure().buildSessionFactory();
         } catch (Throwable ex) {
-            System.err.println("Failed to create sessionFactory object." + ex);
+            LOG.error("Failed to create sessionFactory object." + ex);
             throw new ExceptionInInitializerError(ex);
         }
     }
@@ -55,7 +57,7 @@ public class DataManager {
             tx.commit();
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
-            e.printStackTrace();
+            LOG.error("Failed to addMeasurePoint :" + e);
         } finally {
             session.close();
         }
@@ -80,13 +82,13 @@ public class DataManager {
             tx.commit();
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
-            e.printStackTrace();
+            LOG.error("Failed to listMeasurePoints :" + e);
         } finally {
             session.close();
         }
         //TODO Dirty fix by using json object
         response = response.substring(0, response.length() - 1);
-        System.out.print(response + "]}");
+        LOG.debug(response + "]}");
         return response.concat("]}");
     }
 
@@ -108,13 +110,13 @@ public class DataManager {
             tx.commit();
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
-            e.printStackTrace();
+            LOG.error("Failed to listLastWeekMeasurePoints :" + e);
         } finally {
             session.close();
         }
         //TODO Dirty fix by using json object
         response = response.substring(0, response.length() - 1);
-        System.out.print(response + "]}");
+        LOG.debug(response + "]}");
         return response.concat("]}");
     }
 
@@ -135,13 +137,13 @@ public class DataManager {
             tx.commit();
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
-            e.printStackTrace();
+            LOG.error("Failed to listLastDayMeasurePoints :" + e);
         } finally {
             session.close();
         }
         //TODO Dirty fix by using json object
         response = response.substring(0, response.length() - 1);
-        System.out.print(response + "]}");
+        LOG.debug(response + "]}");
         return response.concat("]}");
     }
 

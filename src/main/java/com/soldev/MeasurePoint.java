@@ -2,11 +2,15 @@ package com.soldev;
 
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by kjansen on 27/12/14.
  */
 public class MeasurePoint {
+    private static final Logger LOG = LoggerFactory.getLogger(MeasurePoint.class);
+
     private int id;
     private int currentPower = 0;
     private int totalGas = 0;
@@ -33,7 +37,7 @@ public class MeasurePoint {
         System.out.println("currentPower=" + this.currentPower.toString());
         System.out.println("totalGas=" + this.totalGas.toString());
         */
-        System.out.println("measureDateTime=" + this.measureDateTime.toString());
+        LOG.debug("measureDateTime=" + this.measureDateTime.toString());
     }
 
     public int getId() {
