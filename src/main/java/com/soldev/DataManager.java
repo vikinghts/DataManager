@@ -91,4 +91,61 @@ public class DataManager {
         return response.concat("]}");
     }
 
+
+    public String listLastWeekMeasurePoints() {
+        Session session = factory.openSession();
+        Transaction tx = null;
+        String response = "{\"AllMeasurePoints\":[";
+        try {
+            tx = session.beginTransaction();
+            List measurePoints = session.createQuery("select * FROM MeasurePoint where mdatetime >= now() - interval '7 days'").list();
+            for (Iterator iterator =
+                         measurePoints.iterator(); iterator.hasNext(); ) {
+                MeasurePoint measurePoint = (MeasurePoint) iterator.next();
+                Integer curPower = measurePoint.getCurrentPower();
+                response = response + ("{\"MeasureDateTime\":\"" + measurePoint.getMeasureDateTime().toString() + "\",");
+                response = response + ("\"CurrentPower\":" + curPower.toString() + "},");
+            }
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        //TODO Dirty fix by using json object
+        response = response.substring(0, response.length() - 1);
+        System.out.print(response + "]}");
+        return response.concat("]}");
+    }
+
+    public String listLastDayMeasurePoints() {
+        Session session = factory.openSession();
+        Transaction tx = null;
+        String response = "{\"AllMeasurePoints\":[";
+        try {
+            tx = session.beginTransaction();
+            List measurePoints = session.createQuery("select * FROM MeasurePoint where mdatetime >= now() - interval '1 days'").list();
+            for (Iterator iterator =
+                         measurePoints.iterator(); iterator.hasNext(); ) {
+                MeasurePoint measurePoint = (MeasurePoint) iterator.next();
+                Integer curPower = measurePoint.getCurrentPower();
+                response = response + ("{\"MeasureDateTime\":\"" + measurePoint.getMeasureDateTime().toString() + "\",");
+                response = response + ("\"CurrentPower\":" + curPower.toString() + "},");
+            }
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        //TODO Dirty fix by using json object
+        response = response.substring(0, response.length() - 1);
+        System.out.print(response + "]}");
+        return response.concat("]}");
+    }
+
+
+
 }

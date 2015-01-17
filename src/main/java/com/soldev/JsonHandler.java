@@ -71,17 +71,37 @@ public class JsonHandler {
 
     @GET
     @Path("/getMesurePoints")
-    public Response amIAlive() {
+    public Response getMesurePoints() {
         DataManager DM = DataManager.getInstance();
 
         String output = DM.listMeasurePoints();
 
+        return Response.status(200).entity(output).build();
 
-        //String output = "DataManger Is ALIVE : " + msg;
+    }
+
+    @GET
+    @Path("/getLastWeekMesurePoints")
+    public Response getLastWeekMesurePoints() {
+        DataManager DM = DataManager.getInstance();
+
+        String output = DM.listLastWeekMeasurePoints();
 
         return Response.status(200).entity(output).build();
 
     }
+
+    @GET
+    @Path("/getLastDayMesurePoints")
+    public Response getLastDayMesurePoints() {
+        DataManager DM = DataManager.getInstance();
+
+        String output = DM.listLastDayMeasurePoints();
+
+        return Response.status(200).entity(output).build();
+
+    }
+
 
 }
 
