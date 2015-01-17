@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
  */
 @Path("/")
 public class JsonHandler {
+    public static final int STATUS_OK = 200;
     private static final Logger LOG = LoggerFactory.getLogger(JsonHandler.class);
 
 
@@ -49,7 +50,6 @@ public class JsonHandler {
         Long iMDateTime = jsonObject.getLong("MeasureDataTime");
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMddHHmmss");
         DateTime mDateTime = fmt.parseDateTime(iMDateTime.toString());
-        // return HTTP response 200 in case of success
         DataManager dm = DataManager.getInstance();
 
         dm.addMeasurePoint(jsonObject.getInt("totalDalPower"),
@@ -58,8 +58,8 @@ public class JsonHandler {
                 jsonObject.getInt("totalGas"),
                 mDateTime);
 
-
-        return Response.status(200).entity(dataManagerBuilder.toString()).build();
+        // return HTTP response 200 in case of success
+        return Response.status(STATUS_OK).entity(dataManagerBuilder.toString()).build();
     }
 
     @GET
@@ -68,7 +68,7 @@ public class JsonHandler {
 
         String output = "DataManger Is ALIVE : " + msg;
 
-        return Response.status(200).entity(output).build();
+        return Response.status(STATUS_OK).entity(output).build();
 
     }
 
@@ -79,7 +79,7 @@ public class JsonHandler {
 
         String output = dm.listMeasurePoints();
 
-        return Response.status(200).entity(output).build();
+        return Response.status(STATUS_OK).entity(output).build();
 
     }
 
@@ -90,7 +90,7 @@ public class JsonHandler {
 
         String output = dm.listLastWeekMeasurePoints();
 
-        return Response.status(200).entity(output).build();
+        return Response.status(STATUS_OK).entity(output).build();
 
     }
 
@@ -101,7 +101,7 @@ public class JsonHandler {
 
         String output = dm.listLastDayMeasurePoints();
 
-        return Response.status(200).entity(output).build();
+        return Response.status(STATUS_OK).entity(output).build();
 
     }
 
