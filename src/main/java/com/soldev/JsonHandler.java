@@ -77,7 +77,7 @@ public class JsonHandler {
     public Response getMesurePoints() {
         DataManager dm = DataManager.getInstance();
 
-        String output = dm.listMeasurePoints();
+        String output = dm.listAllMeasurePoints();
 
         return Response.status(STATUS_OK).entity(output).build();
 
@@ -88,7 +88,7 @@ public class JsonHandler {
     public Response getLastWeekMesurePoints() {
         DataManager dm = DataManager.getInstance();
 
-        String output = dm.listLastWeekMeasurePoints();
+        String output = dm.listMeasurePoints(7);
 
         return Response.status(STATUS_OK).entity(output).build();
 
@@ -99,7 +99,7 @@ public class JsonHandler {
     public Response getLastDayMesurePoints() {
         DataManager dm = DataManager.getInstance();
 
-        String output = dm.listLastDayMeasurePoints();
+        String output = dm.listMeasurePoints(1);
 
         return Response.status(STATUS_OK).entity(output).build();
 

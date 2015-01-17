@@ -70,15 +70,14 @@ public class DataManager {
     }
 
     /* Method to  READ all the employees */
-    public String listMeasurePoints() {
+    public String listAllMeasurePoints() {
         Session session = factory.openSession();
         Transaction tx = null;
         String response = "{\"" + ALL_MEASURE_POINTS + "\":[";
         try {
             tx = session.beginTransaction();
             List measurePoints = session.createQuery("FROM MeasurePoint").list();
-            for (Iterator iterator =
-                         measurePoints.iterator(); iterator.hasNext(); ) {
+            for (Iterator iterator = measurePoints.iterator(); iterator.hasNext(); ) {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
                 Integer curPower = measurePoint.getCurrentPower();
                 response = response + ("{" + ESC_QUOTE + MEASURE_DATE_TIME + ESC_QUOTE + ":" + ESC_QUOTE + measurePoint.getMeasureDateTime().toString() + ESC_QUOTE + ",");
@@ -100,15 +99,15 @@ public class DataManager {
     }
 
 
-    public String listLastWeekMeasurePoints() {
+    public String listMeasurePoints(Integer days) {
+        LOG.debug("listMeasurePoints Number of days : " + days.toString());
         Session session = factory.openSession();
         Transaction tx = null;
         String response = "{\"" + ALL_MEASURE_POINTS + "\":[";
         try {
             tx = session.beginTransaction();
             List measurePoints = session.createQuery("select totalDalPower,totalPiekPower,currentPower,totalGas,measureDateTime FROM MeasurePoint where measureDateTime = current_date()").list();
-            for (Iterator iterator =
-                         measurePoints.iterator(); iterator.hasNext(); ) {
+            for (Iterator iterator = measurePoints.iterator(); iterator.hasNext(); ) {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
                 Integer curPower = measurePoint.getCurrentPower();
                 response = response + ("{" + ESC_QUOTE + MEASURE_DATE_TIME + ESC_QUOTE + ":" + ESC_QUOTE + measurePoint.getMeasureDateTime().toString() + ESC_QUOTE + ",");
@@ -128,36 +127,4 @@ public class DataManager {
         LOG.debug(response + "]}");
         return response.concat("]}");
     }
-
-    public String listLastDayMeasurePoints() {
-        Session session = factory.openSession();
-        Transaction tx = null;
-        String response = "{\"" + ALL_MEASURE_POINTS + "\":[";
-        try {
-            tx = session.beginTransaction();
-            List measurePoints = session.createQuery("select totalDalPower,totalPiekPower,currentPower,totalGas,measureDateTime FROM MeasurePoint where measureDateTime = current_date()").list();
-            for (Iterator iterator =
-                         measurePoints.iterator(); iterator.hasNext(); ) {
-                MeasurePoint measurePoint = (MeasurePoint) iterator.next();
-                Integer curPower = measurePoint.getCurrentPower();
-                response = response + ("{" + ESC_QUOTE + MEASURE_DATE_TIME + ESC_QUOTE + ":" + ESC_QUOTE + measurePoint.getMeasureDateTime().toString() + ESC_QUOTE + ",");
-                response = response + (ESC_QUOTE + CURRENT_POWER + ESC_QUOTE + ":" + curPower.toString() + "},");
-            }
-            tx.commit();
-        } catch (HibernateException e) {
-            if (tx != null) {
-                tx.rollback();
-            }
-            LOG.error("Failed to listLastDayMeasurePoints :" + e);
-        } finally {
-            session.close();
-        }
-        //TODO Dirty fix by using json object
-        response = response.substring(0, response.length() - 1);
-        LOG.debug(response + "]}");
-        return response.concat("]}");
-    }
-
-
-
 }
