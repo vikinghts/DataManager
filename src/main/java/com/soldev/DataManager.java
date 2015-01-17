@@ -97,7 +97,7 @@ public class DataManager {
         String response = "{\"AllMeasurePoints\":[";
         try {
             tx = session.beginTransaction();
-            List measurePoints = session.createQuery("select MeasurePoint.currentPower,MeasurePoint.measureDateTime  FROM MeasurePoint MeasurePoint where MeasurePoint.measureDateTime = current_date()").list();
+            List measurePoints = session.createQuery("select totalDalPower,totalPiekPower,currentPower,totalGas,measureDateTime FROM MeasurePoint where measureDateTime = current_date()").list();
             for (Iterator iterator =
                          measurePoints.iterator(); iterator.hasNext(); ) {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
@@ -124,7 +124,7 @@ public class DataManager {
         String response = "{\"AllMeasurePoints\":[";
         try {
             tx = session.beginTransaction();
-            List measurePoints = session.createQuery("select MeasurePoint.currentPower,MeasurePoint.measureDateTime  FROM MeasurePoint MeasurePoint where MeasurePoint.measureDateTime = current_date()").list();
+            List measurePoints = session.createQuery("select totalDalPower,totalPiekPower,currentPower,totalGas,measureDateTime FROM MeasurePoint where measureDateTime = current_date()").list();
             for (Iterator iterator =
                          measurePoints.iterator(); iterator.hasNext(); ) {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
