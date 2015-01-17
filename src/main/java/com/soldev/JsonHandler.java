@@ -25,7 +25,7 @@ public class JsonHandler {
 
 
     public JsonHandler() {
-        System.out.println("JsonHandler init");
+        LOG.debug("JsonHandler init");
     }
 
     @POST
@@ -35,13 +35,12 @@ public class JsonHandler {
         StringBuilder dataManagerBuilder = new StringBuilder();
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(incomingData));
-            //String line = null;
             String line;
             while ((line = in.readLine()) != null) {
                 dataManagerBuilder.append(line);
             }
         } catch (Exception e) {
-            LOG.error("Error Parsing: - ");
+            LOG.error("Error Parsing: - " + e);
         }
         LOG.debug("Data Received: " + dataManagerBuilder.toString());
         // structure
@@ -51,9 +50,9 @@ public class JsonHandler {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMddHHmmss");
         DateTime mDateTime = fmt.parseDateTime(iMDateTime.toString());
         // return HTTP response 200 in case of success
-        DataManager DM = DataManager.getInstance();
+        DataManager dm = DataManager.getInstance();
 
-        Integer mPID1 = DM.addMeasurePoint(jsonObject.getInt("totalDalPower"),
+        dm.addMeasurePoint(jsonObject.getInt("totalDalPower"),
                 jsonObject.getInt("totalPiekPower"),
                 jsonObject.getInt("CurrentPower"),
                 jsonObject.getInt("totalGas"),
@@ -76,9 +75,9 @@ public class JsonHandler {
     @GET
     @Path("/getMesurePoints")
     public Response getMesurePoints() {
-        DataManager DM = DataManager.getInstance();
+        DataManager dm = DataManager.getInstance();
 
-        String output = DM.listMeasurePoints();
+        String output = dm.listMeasurePoints();
 
         return Response.status(200).entity(output).build();
 
@@ -87,9 +86,9 @@ public class JsonHandler {
     @GET
     @Path("/getLastWeekMesurePoints")
     public Response getLastWeekMesurePoints() {
-        DataManager DM = DataManager.getInstance();
+        DataManager dm = DataManager.getInstance();
 
-        String output = DM.listLastWeekMeasurePoints();
+        String output = dm.listLastWeekMeasurePoints();
 
         return Response.status(200).entity(output).build();
 
@@ -98,9 +97,9 @@ public class JsonHandler {
     @GET
     @Path("/getLastDayMesurePoints")
     public Response getLastDayMesurePoints() {
-        DataManager DM = DataManager.getInstance();
+        DataManager dm = DataManager.getInstance();
 
-        String output = DM.listLastDayMeasurePoints();
+        String output = dm.listLastDayMeasurePoints();
 
         return Response.status(200).entity(output).build();
 

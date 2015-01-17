@@ -36,12 +36,11 @@ public class DataManager {
     }
 
     protected void init() {
-        System.out.println("DataManager init");
+        LOG.debug("DataManager init");
         try {
             factory = new Configuration().configure().buildSessionFactory();
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             LOG.error("Failed to create sessionFactory object." + ex);
-            throw new ExceptionInInitializerError(ex);
         }
     }
 
@@ -81,7 +80,9 @@ public class DataManager {
             }
             tx.commit();
         } catch (HibernateException e) {
-            if (tx != null) tx.rollback();
+            if (tx != null) {
+                tx.rollback();
+            }
             LOG.error("Failed to listMeasurePoints :" + e);
         } finally {
             session.close();
@@ -136,7 +137,9 @@ public class DataManager {
             }
             tx.commit();
         } catch (HibernateException e) {
-            if (tx != null) tx.rollback();
+            if (tx != null) {
+                tx.rollback();
+            }
             LOG.error("Failed to listLastDayMeasurePoints :" + e);
         } finally {
             session.close();

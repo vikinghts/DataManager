@@ -30,13 +30,6 @@ public class MeasurePoint {
     }
 
     public void printContents() {
-        /*
-        System.out.println("id=" + this.id.toString());
-        System.out.println("totalDalPower=" + this.totalDalPower.toString());
-        System.out.println("totalPiekPower=" + this.totalPiekPower.toString());
-        System.out.println("currentPower=" + this.currentPower.toString());
-        System.out.println("totalGas=" + this.totalGas.toString());
-        */
         LOG.debug("measureDateTime=" + this.measureDateTime.toString());
     }
 
