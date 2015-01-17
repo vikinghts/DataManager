@@ -56,7 +56,7 @@ dependencies {
     compile 'org.rxtx:rxtx:2.1.7'
     compile 'org.json:json:20131018'
     compile 'org.hibernate:hibernate-core:4.3.6.Final'
-    //needed to make jodatime work with hybernate!
+    //needed to make jodatime work with hibernate!
     compile 'org.jadira.usertype:usertype.jodatime:2.0.1'
 
     //compile 'javax.servlet:servlet-api:2.5'
@@ -236,6 +236,6 @@ task buildDockerContainer(type: Exec, dependsOn: "copyJarDocker") {
 task runDockerContainer(type: Exec, dependsOn: "buildDockerContainer") {
     environment 'DOCKER_HOST', DOCKER_HOST
     // to expose port to outside world:  '-p', '10022:22',
-    // to make a usb to serial adapeter available: '--privileged', '-v', '/dev/ttyUSB0:/dev/ttyUSB0'
+    // to make a usb to serial adapter available: '--privileged', '-v', '/dev/ttyUSB0:/dev/ttyUSB0'
     commandLine '/usr/local/bin/docker', 'run', '-p', '3232:8080',  '-p', '3222:22', '--name', "datamanager-run-${version}", '-i', '-t', "datamanager:${version}"
 }

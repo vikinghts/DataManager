@@ -3,13 +3,11 @@ package com.soldev;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 
 /**
  * Created by kjansen on 22/12/14.
- * This class test the datahandler class
+ * This class test the data handler class
  */
 public class DataManagerTest {
 

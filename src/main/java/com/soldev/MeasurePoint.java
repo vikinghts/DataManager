@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Created by kjansen on 27/12/14.
+ * This is the class the hold all the measured points of the SmartMeter *
  */
 public class MeasurePoint {
     private static final Logger LOG = LoggerFactory.getLogger(MeasurePoint.class);

@@ -9,7 +9,6 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -18,19 +17,19 @@ import java.util.List;
  * This class parses the meter data and extracts it values to post them to a web socket.
  */
 public class DataManager {
-    public static final String ALL_MEASURE_POINTS = "AllMeasurePoints";
-    public static final String MEASURE_DATE_TIME = "MeasureDateTime";
-    public static final String CURRENT_POWER = "CurrentPower";
-    public static final String ESC_QUOTE = "\"";
+    private static final String ALL_MEASURE_POINTS = "AllMeasurePoints";
+    private static final String MEASURE_DATE_TIME = "MeasureDateTime";
+    private static final String CURRENT_POWER = "CurrentPower";
+    private static final String ESC_QUOTE = "\"";
     private static final Logger LOG = LoggerFactory.getLogger(DataManager.class);
     private static SessionFactory factory;
     private static DataManager instance = null;
 
-    protected DataManager() {
+    private DataManager() {
         // Exists only to defeat instantiation.
     }
 
-    //singleton to make sure we only have one datahandler.
+    //singleton to make sure we only have one data handler.
     public static DataManager getInstance() {
         if (instance == null) {
             instance = new DataManager();
@@ -39,7 +38,7 @@ public class DataManager {
         return instance;
     }
 
-    protected void init() {
+    void init() {
         LOG.debug("DataManager init");
         try {
             factory = new Configuration().configure().buildSessionFactory();
@@ -77,8 +76,8 @@ public class DataManager {
         try {
             tx = session.beginTransaction();
             List measurePoints = session.createQuery("FROM MeasurePoint").list();
-            for (Iterator iterator = measurePoints.iterator(); iterator.hasNext(); ) {
-                MeasurePoint measurePoint = (MeasurePoint) iterator.next();
+            for (Object measurePoint1 : measurePoints) {
+                MeasurePoint measurePoint = (MeasurePoint) measurePoint1;
                 Integer curPower = measurePoint.getCurrentPower();
                 response = response + ("{" + ESC_QUOTE + MEASURE_DATE_TIME + ESC_QUOTE + ":" + ESC_QUOTE + measurePoint.getMeasureDateTime().toString() + ESC_QUOTE + ",");
                 response = response + (ESC_QUOTE + CURRENT_POWER + ESC_QUOTE + ":" + curPower.toString() + "},");
@@ -107,8 +106,8 @@ public class DataManager {
         try {
             tx = session.beginTransaction();
             List measurePoints = session.createQuery("select totalDalPower,totalPiekPower,currentPower,totalGas,measureDateTime FROM MeasurePoint where measureDateTime = current_date()").list();
-            for (Iterator iterator = measurePoints.iterator(); iterator.hasNext(); ) {
-                MeasurePoint measurePoint = (MeasurePoint) iterator.next();
+            for (Object measurePoint1 : measurePoints) {
+                MeasurePoint measurePoint = (MeasurePoint) measurePoint1;
                 Integer curPower = measurePoint.getCurrentPower();
                 response = response + ("{" + ESC_QUOTE + MEASURE_DATE_TIME + ESC_QUOTE + ":" + ESC_QUOTE + measurePoint.getMeasureDateTime().toString() + ESC_QUOTE + ",");
                 response = response + (ESC_QUOTE + CURRENT_POWER + ESC_QUOTE + ":" + curPower.toString() + "},");

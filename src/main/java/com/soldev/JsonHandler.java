@@ -20,8 +20,8 @@ import java.io.InputStreamReader;
  * This class parses the meter data and extracts it values to post them to a web socket.
  */
 @Path("/")
-public class JsonHandler {
-    public static final int STATUS_OK = 200;
+class JsonHandler {
+    private static final int STATUS_OK = 200;
     private static final Logger LOG = LoggerFactory.getLogger(JsonHandler.class);
 
 
@@ -73,8 +73,8 @@ public class JsonHandler {
     }
 
     @GET
-    @Path("/getMesurePoints")
-    public Response getMesurePoints() {
+    @Path("/getMeasurePoints")
+    public Response getMeasurePoints() {
         DataManager dm = DataManager.getInstance();
 
         String output = dm.listAllMeasurePoints();
@@ -84,8 +84,8 @@ public class JsonHandler {
     }
 
     @GET
-    @Path("/getLastWeekMesurePoints")
-    public Response getLastWeekMesurePoints() {
+    @Path("/getLastWeekMeasurePoints")
+    public Response getLastWeekMeasurePoints() {
         DataManager dm = DataManager.getInstance();
 
         String output = dm.listMeasurePoints(7);
@@ -95,8 +95,8 @@ public class JsonHandler {
     }
 
     @GET
-    @Path("/getLastDayMesurePoints")
-    public Response getLastDayMesurePoints() {
+    @Path("/getLastDayMeasurePoints")
+    public Response getLastDayMeasurePoints() {
         DataManager dm = DataManager.getInstance();
 
         String output = dm.listMeasurePoints(1);
