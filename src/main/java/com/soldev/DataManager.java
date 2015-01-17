@@ -21,6 +21,7 @@ public class DataManager {
     public static final String ALL_MEASURE_POINTS = "AllMeasurePoints";
     public static final String MEASURE_DATE_TIME = "MeasureDateTime";
     public static final String CURRENT_POWER = "CurrentPower";
+    public static final String ESC_QUOTE = "\"";
     private static final Logger LOG = LoggerFactory.getLogger(DataManager.class);
     private static SessionFactory factory;
     private static DataManager instance = null;
@@ -81,7 +82,7 @@ public class DataManager {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
                 Integer curPower = measurePoint.getCurrentPower();
                 response = response + ("{\"" + MEASURE_DATE_TIME + "\":\"" + measurePoint.getMeasureDateTime().toString() + "\",");
-                response = response + ("\"" + CURRENT_POWER + "\":" + curPower.toString() + "},");
+                response = response + (ESC_QUOTE + CURRENT_POWER + "\":" + curPower.toString() + "},");
             }
             tx.commit();
         } catch (HibernateException e) {
@@ -111,7 +112,7 @@ public class DataManager {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
                 Integer curPower = measurePoint.getCurrentPower();
                 response = response + ("{\"" + MEASURE_DATE_TIME + "\":\"" + measurePoint.getMeasureDateTime().toString() + "\",");
-                response = response + ("\"" + CURRENT_POWER + "\":" + curPower.toString() + "},");
+                response = response + (ESC_QUOTE + CURRENT_POWER + "\":" + curPower.toString() + "},");
             }
             tx.commit();
         } catch (HibernateException e) {
@@ -140,7 +141,7 @@ public class DataManager {
                 MeasurePoint measurePoint = (MeasurePoint) iterator.next();
                 Integer curPower = measurePoint.getCurrentPower();
                 response = response + ("{\"" + MEASURE_DATE_TIME + "\":\"" + measurePoint.getMeasureDateTime().toString() + "\",");
-                response = response + ("\"" + CURRENT_POWER + "\":" + curPower.toString() + "},");
+                response = response + (ESC_QUOTE + CURRENT_POWER + "\":" + curPower.toString() + "},");
             }
             tx.commit();
         } catch (HibernateException e) {
