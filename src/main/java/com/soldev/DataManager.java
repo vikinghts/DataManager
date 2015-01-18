@@ -25,7 +25,7 @@ public class DataManager {
     private static SessionFactory factory;
     private static DataManager instance = null;
 
-    protected DataManager() {
+    private DataManager() {
         // Exists only to defeat instantiation.
     }
 

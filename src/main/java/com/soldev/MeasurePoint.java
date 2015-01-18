@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * Created by kjansen on 27/12/14.
  * This is the class the hold all the measured points of the SmartMeter *
  */
-public class MeasurePoint {
+class MeasurePoint {
     private static final Logger LOG = LoggerFactory.getLogger(MeasurePoint.class);
 
     private int id;
@@ -19,7 +19,7 @@ public class MeasurePoint {
     private int totalPiekPower = 0;
     private DateTime measureDateTime;
 
-    public MeasurePoint() {
+    private MeasurePoint() {
     }
 
     public MeasurePoint(int tDPower, int tPPower, int cpower, int tGas, DateTime mDateTime) {

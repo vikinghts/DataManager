@@ -5,7 +5,7 @@
 <hibernate-configuration>
     <session-factory>
         <property name="hibernate.dialect">
-            org.hibernate.dialect.PostgreSQLDialect
+            org.hibernate.dialect.PostgreSQL82Dialect
         </property>
         <property name="hibernate.connection.driver_class">
             org.postgresql.Driver
