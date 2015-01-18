@@ -84,37 +84,6 @@ jacocoTestReport {
     }
 }
 
-task systemTest(type: Test) {
-    doFirst{
-        //project.cargo.deployable.context = "smartMeterSystemTest"
-        //cargoReDeployRemote.execute()
-    }
-    testClassesDir = sourceSets.systemTest.output.classesDir
-    classpath = sourceSets.systemTest.runtimeClasspath
-    reports.junitXml.destination = file("${reporting.baseDir}/systemTest")
-    reports.html.destination = file("${reporting.baseDir}/systemTest")
-}
-
-
-task performanceTest(type: Test) {
-    testClassesDir = sourceSets.performanceTest.output.classesDir
-    classpath = sourceSets.performanceTest.runtimeClasspath
-    reports.junitXml.destination = file("${reporting.baseDir}/performanceTest")
-    reports.html.destination = file("${reporting.baseDir}/performanceTest")
-}
-
-task integrationTest(type: Test) {
-    testClassesDir = sourceSets.integrationTest.output.classesDir
-    classpath = sourceSets.integrationTest.runtimeClasspath
-    reports.junitXml.destination = file("${reporting.baseDir}/integrationTest")
-    reports.html.destination = file("${reporting.baseDir}/integrationTest")
-}
-
-task liveTestGroup(dependsOn: ['systemTest', 'performanceTest', 'integrationTest'])
-//to start/stop tomcat for test runs
-liveTestGroup.dependsOn war, cargoStartLocal
-liveTestGroup.finalizedBy cargoStopLocal
-
 sonarRunner {
     sonarProperties {
         property "sonar.jacoco.reportPath", "$buildDir/jacoco/test.exec"
@@ -239,3 +208,51 @@ task runDockerContainer(type: Exec, dependsOn: "buildDockerContainer") {
     // to make a usb to serial adapter available: '--privileged', '-v', '/dev/ttyUSB0:/dev/ttyUSB0'
     commandLine '/usr/local/bin/docker', 'run', '-p', '3232:8080',  '-p', '3222:22', '--name', "datamanager-run-${version}", '-i', '-t', "datamanager:${version}"
 }
+
+task stopAndRemoveOldDockerSystemTestContainer(type: Exec) {
+    def dockerCommand = new File('/tmp/dockerCommand.sh')
+    dockerCommand.write('id=($(/usr/local/bin/docker ps -a | grep datamanager-system-test))\n\
+                         echo $id\n\
+                         /usr/local/bin/docker rm -f $id\n\
+                         echo "done removing $1"')
+    environment 'DOCKER_HOST', DOCKER_HOST
+    commandLine 'sh', '/tmp/dockerCommand.sh'
+}
+
+task runDockerSystemTestContainer(type: Exec, dependsOn: ["buildDockerContainer","stopAndRemoveOldDockerSystemTestContainer"]) {
+    environment 'DOCKER_HOST', DOCKER_HOST
+    // to expose port to outside world:  '-p', '10022:22',
+    // to make a usb to serial adapter available: '--privileged', '-v', '/dev/ttyUSB0:/dev/ttyUSB0'
+    // port exposure on osx works differntly.... :
+    //VBoxManage controlvm boot2docker-vm natpf2 "name,tcp,127.0.0.1,4242,,4242"
+    commandLine '/usr/local/bin/docker', 'run', '-p', '4242:8080', '--name', "datamanager-system-test-run-${version}", '-i', '-t', "datamanager:${version}"
+}
+
+
+task systemTest(type: Test, dependsOn: runDockerSystemTestContainer) {
+    testClassesDir = sourceSets.systemTest.output.classesDir
+    classpath = sourceSets.systemTest.runtimeClasspath
+    reports.junitXml.destination = file("${reporting.baseDir}/systemTest")
+    reports.html.destination = file("${reporting.baseDir}/systemTest")
+}
+
+
+task performanceTest(type: Test) {
+    testClassesDir = sourceSets.performanceTest.output.classesDir
+    classpath = sourceSets.performanceTest.runtimeClasspath
+    reports.junitXml.destination = file("${reporting.baseDir}/performanceTest")
+    reports.html.destination = file("${reporting.baseDir}/performanceTest")
+}
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    reports.junitXml.destination = file("${reporting.baseDir}/integrationTest")
+    reports.html.destination = file("${reporting.baseDir}/integrationTest")
+}
+
+task liveTestGroup(dependsOn: ['systemTest', 'performanceTest', 'integrationTest'])
+//to start/stop tomcat for test runs
+liveTestGroup.dependsOn war, cargoStartLocal
+liveTestGroup.finalizedBy cargoStopLocal
+
