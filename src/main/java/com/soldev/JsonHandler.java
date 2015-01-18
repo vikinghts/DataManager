@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
  * This class parses the meter data and extracts it values to post them to a web socket.
  */
 @Path("/")
-class JsonHandler {
+public class JsonHandler {
     private static final int STATUS_OK = 200;
     private static final Logger LOG = LoggerFactory.getLogger(JsonHandler.class);
 
