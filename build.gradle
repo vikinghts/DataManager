@@ -186,7 +186,8 @@ task stopAndRemoveOldDockerContainer(type: Exec) {
                          echo $id\n\
                          /usr/local/bin/docker rm -f $id\n\
                          echo "done removing $1"')
-    //dockerCommand.write('/usr/local/bin/docker rm -f $(/usr/local/bin/docker ps -q --before="datamanager-run-0.1")')
+    environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
+    environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
     environment 'DOCKER_HOST', DOCKER_HOST
     commandLine 'sh', "/tmp/dockerCommand${curUser}.sh"
 }
@@ -199,15 +200,19 @@ task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "shadow"]) {
 
 task buildDockerContainer(type: Exec, dependsOn: "copyJarDocker") {
     workingDir 'docker/'
+    environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
+    environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
     environment 'DOCKER_HOST', DOCKER_HOST
     commandLine '/usr/local/bin/docker', 'build', '-t', "datamanager:${version}", '.'
 }
 
 task runDockerContainer(type: Exec, dependsOn: "buildDockerContainer") {
+    environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
+    environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
     environment 'DOCKER_HOST', DOCKER_HOST
     // to expose port to outside world:  '-p', '10022:22',
     // to make a usb to serial adapter available: '--privileged', '-v', '/dev/ttyUSB0:/dev/ttyUSB0'
-    commandLine '/usr/local/bin/docker', 'run', '-p', '3232:8080',  '-p', '3222:22', '--name', "datamanager-run-${version}", '-i', '-t', "datamanager:${version}"
+    commandLine '/usr/local/bin/docker', 'run', '-p', '3232:8080',  '-p', '3222:22', '--name', "datamanager-run-${version}", '-t', "datamanager:${version}"
 }
 
 task stopAndRemoveOldDockerSystemTestContainer(type: Exec) {
@@ -217,21 +222,24 @@ task stopAndRemoveOldDockerSystemTestContainer(type: Exec) {
                          echo $id\n\
                          /usr/local/bin/docker rm -f $id\n\
                          echo "done removing $1"')
+    environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
+    environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
     environment 'DOCKER_HOST', DOCKER_HOST
-    commandLine 'sh', "/tmp/dockerCommandSystemTes${curUser}.sh"
+    commandLine 'sh', "/tmp/dockerCommandSystemTest${curUser}.sh"
 }
 
 task runDockerSystemTestContainer(type: Exec, dependsOn: ["buildDockerContainer","stopAndRemoveOldDockerSystemTestContainer"]) {
+    environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
+    environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
     environment 'DOCKER_HOST', DOCKER_HOST
     // to expose port to outside world:  '-p', '10022:22',
     // to make a usb to serial adapter available: '--privileged', '-v', '/dev/ttyUSB0:/dev/ttyUSB0'
-    // port exposure on osx works differntly.... :
-    //VBoxManage controlvm boot2docker-vm natpf2 "name,tcp,127.0.0.1,4242,,4242"
-    commandLine '/usr/local/bin/docker', 'run', '-p', '4242:8080', '--name', "datamanager-system-test-run-${version}", '-i', '-t', "datamanager:${version}"
+    commandLine '/usr/local/bin/docker', 'run', '-p', '4242:8080', '--name', "datamanager-system-test-run-${version}", '-d','-t', "datamanager:${version}"
 }
 
 
 task systemTest(type: Test, dependsOn: runDockerSystemTestContainer) {
+    systemProperties['SYSTEM_TEST_HOST'] = SYSTEM_TEST_HOST ?: "localhost"
     testClassesDir = sourceSets.systemTest.output.classesDir
     classpath = sourceSets.systemTest.runtimeClasspath
     reports.junitXml.destination = file("${reporting.baseDir}/systemTest")
