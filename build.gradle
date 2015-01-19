@@ -180,14 +180,15 @@ publishing {
 
 
 task stopAndRemoveOldDockerContainer(type: Exec) {
-    def dockerCommand = new File('/tmp/dockerCommand.sh')
+    def curUser = System.getenv('USER')
+    def dockerCommand = new File("/tmp/dockerCommand${curUser}.sh")
     dockerCommand.write('id=($(/usr/local/bin/docker ps -a | grep datamanager))\n\
                          echo $id\n\
                          /usr/local/bin/docker rm -f $id\n\
                          echo "done removing $1"')
     //dockerCommand.write('/usr/local/bin/docker rm -f $(/usr/local/bin/docker ps -q --before="datamanager-run-0.1")')
     environment 'DOCKER_HOST', DOCKER_HOST
-    commandLine 'sh', '/tmp/dockerCommand.sh'
+    commandLine 'sh', "/tmp/dockerCommand${curUser}.sh"
 }
 
 
@@ -210,13 +211,14 @@ task runDockerContainer(type: Exec, dependsOn: "buildDockerContainer") {
 }
 
 task stopAndRemoveOldDockerSystemTestContainer(type: Exec) {
-    def dockerCommand = new File('/tmp/dockerCommand.sh')
+    def curUser = System.getenv('USER')
+    def dockerCommand = new File("/tmp/dockerCommandSystemTest${curUser}.sh")
     dockerCommand.write('id=($(/usr/local/bin/docker ps -a | grep datamanager-system-test))\n\
                          echo $id\n\
                          /usr/local/bin/docker rm -f $id\n\
                          echo "done removing $1"')
     environment 'DOCKER_HOST', DOCKER_HOST
-    commandLine 'sh', '/tmp/dockerCommand.sh'
+    commandLine 'sh', "/tmp/dockerCommandSystemTes${curUser}.sh"
 }
 
 task runDockerSystemTestContainer(type: Exec, dependsOn: ["buildDockerContainer","stopAndRemoveOldDockerSystemTestContainer"]) {
