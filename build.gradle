@@ -185,7 +185,7 @@ task stopAndRemoveOldDockerContainer(type: Exec) {
     dockerCommand.write('id=($(/usr/local/bin/docker ps -a | grep datamanager))\n\
     if [ X${id} != X"" ]; then\n\
         echo "removing:$id images"\n\
-        #/usr/local/bin/docker rm -f $id\n\
+        /usr/local/bin/docker rm -f $id\n\
         echo "done removing $1"\n\
     else\n\
         echo "no images running"\n\
@@ -225,7 +225,7 @@ task stopAndRemoveOldDockerSystemTestContainer(type: Exec) {
     dockerCommand.write('id=($(/usr/local/bin/docker ps -a | grep datamanager-system-test))\n\
     if [ X${id} != X"" ]; then\n\
         echo "removing:$id images"\n\
-        #/usr/local/bin/docker rm -f $id\n\
+        /usr/local/bin/docker rm -f $id\n\
         echo "done removing $1"\n\
     else\n\
         echo "no images running"\n\
