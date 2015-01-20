@@ -173,7 +173,6 @@ publishing {
             credentials {
                 logger.quiet ("url = ${artifactory_uploadContextUrl}/${ExternalRepo}/libs-snapshot-local")
                 logger.quiet("artifactory username = ${System.getenv().artifactory_push_user}")
-                logger.quiet("artifactory password = ${System.getenv().artifactory_push_password}")
                 username = "${System.getenv().artifactory_push_user}"
                 password = "${System.getenv().artifactory_push_password}"
             }
