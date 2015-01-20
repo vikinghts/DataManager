@@ -183,9 +183,13 @@ task stopAndRemoveOldDockerContainer(type: Exec) {
     def curUser = System.getenv('USER')
     def dockerCommand = new File("/tmp/dockerCommand${curUser}.sh")
     dockerCommand.write('id=($(/usr/local/bin/docker ps -a | grep datamanager))\n\
-                         echo $id\n\
-                         /usr/local/bin/docker rm -f $id\n\
-                         echo "done removing $1"')
+    if [ X${id} != X"" ]; then\n\
+        echo "removing:$id images"\n\
+        #/usr/local/bin/docker rm -f $id\n\
+        echo "done removing $1"\n\
+    else\n\
+        echo "no images running"\n\
+    fi')
     environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
     environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
     environment 'DOCKER_HOST', DOCKER_HOST
@@ -219,9 +223,13 @@ task stopAndRemoveOldDockerSystemTestContainer(type: Exec) {
     def curUser = System.getenv('USER')
     def dockerCommand = new File("/tmp/dockerCommandSystemTest${curUser}.sh")
     dockerCommand.write('id=($(/usr/local/bin/docker ps -a | grep datamanager-system-test))\n\
-                         echo $id\n\
-                         /usr/local/bin/docker rm -f $id\n\
-                         echo "done removing $1"')
+    if [ X${id} != X"" ]; then\n\
+        echo "removing:$id images"\n\
+        #/usr/local/bin/docker rm -f $id\n\
+        echo "done removing $1"\n\
+    else\n\
+        echo "no images running"\n\
+    fi')
     environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
     environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
     environment 'DOCKER_HOST', DOCKER_HOST
