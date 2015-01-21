@@ -39,6 +39,7 @@ apply plugin: 'shadow'
 
 repositories {
     mavenCentral()
+    maven { url "${artifactory_uploadContextUrl}/${ExternalRepo}/libs-snapshot-local" }
 }
 
 //find out howto make groovy directories in the systemTest
@@ -47,6 +48,10 @@ sourceSets {
     performanceTest
     integrationTest
     resources
+}
+
+configurations {
+  systemTestWar
 }
 
 dependencies {
@@ -76,7 +81,8 @@ dependencies {
     systemTestRuntime configurations.testRuntime
     performanceTestCompile configurations.testCompile
     performanceTestRuntime configurations.testRuntime
-
+    
+    systemTestWar "${group}:${name}:${version}"
 }
 
 jacocoTestReport {
@@ -147,7 +153,7 @@ task runUploadedJar(type: SshTask, dependsOn: "uploadFiles") {
 
 
 artifacts{
-    archives jar
+    archives war
 }
 
 uploadArchives {
@@ -205,6 +211,17 @@ task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "shadow"]) {
     into 'docker'
 }
 
+task copyDockerFilesSystemTestDocker(type: Copy) {
+    from "docker"
+    into 'build/docker'
+}
+
+task copyJarSystemTestDocker(type: Copy, dependsOn: "copyDockerFilesSystemTestDocker") {
+    println "kees:" + configurations.systemTestWar.find { it.name.startsWith("DataManager") }
+    from configurations.systemTestWar.find { it.name.startsWith("DataManager") }
+    into 'build/docker'
+}
+
 task buildDockerContainer(type: Exec, dependsOn: "copyJarDocker") {
     workingDir 'docker/'
     environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
@@ -213,7 +230,7 @@ task buildDockerContainer(type: Exec, dependsOn: "copyJarDocker") {
     commandLine '/usr/local/bin/docker', 'build', '-t', "datamanager:${version}", '.'
 }
 
-task buildDockerSystemTestContainer(type: Exec, dependsOn: "copyJarDocker") {
+task buildDockerSystemTestContainer(type: Exec, dependsOn: "copyJarSystemTestDocker") {
     workingDir 'docker/'
     environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
     environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
