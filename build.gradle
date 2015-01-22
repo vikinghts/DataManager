@@ -212,7 +212,7 @@ task copyDockerFiles(type: Copy) {
 }
 
 task getLatestReleasedWar(type: Exec, dependsOn: copyDockerFiles) {
-    commandLine "${projectDir}/gradlew", '-b', 'getLatestReleasedWar.gradle', 'getLatest'
+    commandLine "${projectDir}/gradlew", '-b', 'getLatestReleasedWar.gradle', 'getLatestRelease'
 }
 
 task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "shadow","getLatestReleasedWar"]) {
@@ -222,7 +222,7 @@ task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "shadow","getLatestRele
 
 task copyJarSystemTestDocker(type: Exec, dependsOn: "copyDockerFiles") {
     println "line = $projectDir}"
-    commandLine "${projectDir}/gradlew", '-b', 'getWarPublishWar.gradle', 'copyJarSystemTestDockerTest'
+    commandLine "${projectDir}/gradlew", '-b', 'getWarPublishWar.gradle', 'getLatestSnapshot'
 }
 
 task buildDockerContainer(type: Exec, dependsOn: "copyJarDocker") {

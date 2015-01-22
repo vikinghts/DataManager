@@ -1,15 +1,14 @@
-task wrapper(type: Wrapper) {
-    gradleVersion = "2.2.1"
-}
+apply plugin: 'java'
+apply plugin: 'maven-publish'
 
 version = 0.1
 group = 'com.soldev'
 
-apply plugin: 'java'
-apply plugin: 'maven-publish'
+task wrapper(type: Wrapper) {
+    gradleVersion = "2.2.1"
+}
 
 repositories {
-    //mavenCentral()
     maven { url "${artifactory_uploadContextUrl}/${ExternalRepo}/libs-snapshot-local" }
 }
 
@@ -25,7 +24,7 @@ dependencies {
     systemTestWar "com.soldev:DataManager:0.1-SNAPSHOT"
 }
 
-task copyJarSystemTestDockerTest(type: Copy) {
+task getLatestSnapshot(type: Copy) {
     println "War to copy:" + configurations.systemTestWar.fileCollection { dep -> dep.name == "DataManager" }.singleFile
     from configurations.systemTestWar.fileCollection { dep -> dep.name == "DataManager" }.singleFile
     into 'build/docker'
@@ -33,7 +32,6 @@ task copyJarSystemTestDockerTest(type: Copy) {
         fileName.replace("-SNAPSHOT", "")
     }
 }
-
 
 publishing {
     publications {
