@@ -1,0 +1,58 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = "2.2.1"
+}
+
+version = 0.1
+group = 'com.soldev'
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+repositories {
+    //mavenCentral()
+    maven { url "${artifactory_uploadContextUrl}/${ExternalRepo}/libs-snapshot-local" }
+}
+
+sourceSets {
+    systemTest
+}
+
+configurations {
+    systemTestWar
+}
+
+dependencies {
+    systemTestWar "com.soldev:DataManager:0.1-SNAPSHOT"
+}
+
+task copyJarSystemTestDockerTest(type: Copy) {
+    println "War to copy:" + configurations.systemTestWar.fileCollection { dep -> dep.name == "DataManager" }.singleFile
+    from configurations.systemTestWar.fileCollection { dep -> dep.name == "DataManager" }.singleFile
+    into 'build/docker'
+    rename { String fileName ->
+        fileName.replace("-SNAPSHOT", "")
+    }
+}
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            println "War to publish: ${projectDir}/build/docker/DataManager-${version}.war"
+            artifact "${projectDir}/build/docker/DataManager-${version}.war"
+            groupId = project.group
+            version = project.version + '-' + System.getenv("BUILD_NUMBER") ?: "local"
+        }
+    }
+    repositories {
+        maven {
+            url "${artifactory_uploadContextUrl}/${ExternalRepo}/libs-release-local"
+            credentials {
+                logger.quiet("url = ${artifactory_uploadContextUrl}/${ExternalRepo}/libs-release-local")
+                logger.quiet("artifactory username = ${System.getenv().artifactory_push_user}")
+                username = "${System.getenv().artifactory_push_user}"
+                password = "${System.getenv().artifactory_push_password}"
+            }
+        }
+    }
+}

@@ -218,7 +218,7 @@ task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "shadow","copyDockerFil
 
 task copyJarSystemTestDocker(type: Exec, dependsOn: "copyDockerFiles") {
     println "line = $projectDir}"
-    commandLine "${projectDir}/gradlew", '-b', 'getwar.gradle', 'copyJarSystemTestDockerTest'
+    commandLine "${projectDir}/gradlew", '-b', 'getWarPublishWar.gradle', 'copyJarSystemTestDockerTest'
 }
 
 task buildDockerContainer(type: Exec, dependsOn: "copyJarDocker") {
@@ -281,6 +281,11 @@ task systemTest(type: Test, dependsOn: runDockerSystemTestContainer) {
     reports.html.destination = file("${reporting.baseDir}/systemTest")
 }
 
+task releaseDataManger(type: Exec, dependsOn: stopAndRemoveOldDockerSystemTestContainer) {
+    commandLine "${projectDir}/gradlew", '-b', 'getWarPublishWar.gradle', 'publish'
+}
+
+releaseDataManger.mustRunAfter systemTest
 
 task performanceTest(type: Test) {
     testClassesDir = sourceSets.performanceTest.output.classesDir
