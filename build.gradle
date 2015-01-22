@@ -67,6 +67,12 @@ artifacts{
     archives war
 }
 
+tasks.withType(Exec) {
+    environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
+    environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
+    environment 'DOCKER_HOST', DOCKER_HOST
+}
+
 task stopAndRemoveOldDockerContainer(type: Exec) {
     def curUser = System.getenv('USER')
     def dockerCommand = new File("/tmp/dockerCommand${curUser}.sh")
@@ -78,9 +84,6 @@ task stopAndRemoveOldDockerContainer(type: Exec) {
     else\n\
         echo "no images running"\n\
     fi')
-    environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
-    environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
-    environment 'DOCKER_HOST', DOCKER_HOST
     commandLine 'sh', "/tmp/dockerCommand${curUser}.sh"
 }
 
@@ -100,36 +103,23 @@ task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "getLatestReleasedWar"]
 }
 
 task copyJarSystemTestDocker(type: Exec, dependsOn: "copyDockerFiles") {
-    println "line = $projectDir}"
     commandLine "${projectDir}/gradlew", '-b', 'getWarPublishWar.gradle', 'getLatestSnapshot'
 }
 
 task buildDockerContainer(type: Exec, dependsOn: "copyJarDocker") {
     workingDir 'build/docker/'
-    environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
-    environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
-    environment 'DOCKER_HOST', DOCKER_HOST
     commandLine '/usr/local/bin/docker', 'build', '-t', "datamanager:${version}", '.'
 }
 
 task buildDockerSystemTestContainer(type: Exec, dependsOn: "copyJarSystemTestDocker") {
     workingDir 'build/docker/'
-    environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
-    environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
-    environment 'DOCKER_HOST', DOCKER_HOST
     commandLine '/usr/local/bin/docker', 'build', '-t', "datamanagersystem:${version}", '.'
 }
 
 task runDockerContainer(type: Exec, dependsOn: "buildDockerContainer") {
-    environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
-    environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
-    environment 'DOCKER_HOST', DOCKER_HOST
     // to expose port to outside world:  '-p', '10022:22',
-    // to make a usb to serial adapter available: '--privileged', '-v', '/dev/ttyUSB0:/dev/ttyUSB0'
     commandLine '/usr/local/bin/docker', 'run', '-p', '3232:8080',  '-p', '3222:22', '--name', "datamanager-run-${version}", '-d', '-t', "datamanager:${version}"
 }
-
-
 
 task stopAndRemoveOldDockerSystemTestContainer(type: Exec) {
     def curUser = System.getenv('USER')
@@ -142,21 +132,13 @@ task stopAndRemoveOldDockerSystemTestContainer(type: Exec) {
     else\n\
         echo "no images running"\n\
     fi')
-    environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
-    environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
-    environment 'DOCKER_HOST', DOCKER_HOST
     commandLine 'sh', "/tmp/dockerCommandSystemTest${curUser}.sh"
 }
 
 task runDockerSystemTestContainer(type: Exec, dependsOn: ["buildDockerSystemTestContainer","stopAndRemoveOldDockerSystemTestContainer"]) {
-    environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
-    environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
-    environment 'DOCKER_HOST', DOCKER_HOST
     // to expose port to outside world:  '-p', '10022:22',
-    // to make a usb to serial adapter available: '--privileged', '-v', '/dev/ttyUSB0:/dev/ttyUSB0'
     commandLine '/usr/local/bin/docker', 'run', '-p', '4242:8080', '--name', "datamanager-system-test-run-${version}", '-d','-t', "datamanagersystem:${version}"
 }
-
 
 task systemTest(type: Test, dependsOn: runDockerSystemTestContainer) {
     systemProperties['SYSTEM_TEST_HOST'] = SYSTEM_TEST_HOST ?: "localhost"
