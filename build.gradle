@@ -100,7 +100,7 @@ task getLatestReleasedWar(type: Exec, dependsOn: copyDockerFiles) {
     commandLine "${projectDir}/gradlew", '-b', 'getLatestReleasedWar.gradle', 'getLatestRelease'
 }
 
-task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "shadow","getLatestReleasedWar"]) {
+task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "getLatestReleasedWar"]) {
     from "build/libs"
     into 'build/docker'
 }
