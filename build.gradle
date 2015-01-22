@@ -205,18 +205,18 @@ task stopAndRemoveOldDockerContainer(type: Exec) {
     commandLine 'sh', "/tmp/dockerCommand${curUser}.sh"
 }
 
-
-task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "shadow"]) {
-    from "build/libs"
-    into 'build/docker'
-}
-
-task copyDockerFilesSystemTestDocker(type: Copy) {
+task copyDockerFiles(type: Copy) {
+    //this makes sure we don't accidentally use the wrong war file.
     from "docker"
     into 'build/docker'
 }
 
-task copyJarSystemTestDocker(type: Exec, dependsOn: "copyDockerFilesSystemTestDocker") {
+task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "shadow","copyDockerFiles"]) {
+    from "build/libs"
+    into 'build/docker'
+}
+
+task copyJarSystemTestDocker(type: Exec, dependsOn: "copyDockerFiles") {
     println "line = $projectDir}"
     commandLine "${projectDir}/gradlew", '-b', 'getwar.gradle', 'copyJarSystemTestDockerTest'
 }
