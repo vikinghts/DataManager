@@ -222,7 +222,7 @@ task copyJarSystemTestDocker(type: Exec, dependsOn: "copyDockerFilesSystemTestDo
 }
 
 task buildDockerContainer(type: Exec, dependsOn: "copyJarDocker") {
-    workingDir 'docker/'
+    workingDir 'build/docker/'
     environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
     environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
     environment 'DOCKER_HOST', DOCKER_HOST
@@ -230,7 +230,7 @@ task buildDockerContainer(type: Exec, dependsOn: "copyJarDocker") {
 }
 
 task buildDockerSystemTestContainer(type: Exec, dependsOn: "copyJarSystemTestDocker") {
-    workingDir 'docker/'
+    workingDir 'build/docker/'
     environment 'DOCKER_CERT_PATH', DOCKER_CERT_PATH
     environment 'DOCKER_TLS_VERIFY', DOCKER_TLS_VERIFY
     environment 'DOCKER_HOST', DOCKER_HOST
