@@ -38,13 +38,11 @@ dependencies {
     compile 'org.hibernate:hibernate-core:4.3.6.Final'
     //needed to make jodatime work with hibernate!
     compile 'org.jadira.usertype:usertype.jodatime:2.0.1'
-    //compile 'postgresql:postgresql:9.0-801.jdbc4'
     compile(group: 'log4j', name: 'log4j', version: '1.2.17')
     compile(group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.6.6') // van nexus apd
     compile(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.5')
     testCompile "org.testng:testng:6.3.1"
     testCompile "junit:junit:4.9"
-    testCompile "org.mockito:mockito-all:1.9.5"
     integrationTestCompile configurations.testCompile
     integrationTestRuntime configurations.testRuntime
     systemTestCompile configurations.testCompile
