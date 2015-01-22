@@ -281,11 +281,9 @@ task systemTest(type: Test, dependsOn: runDockerSystemTestContainer) {
     reports.html.destination = file("${reporting.baseDir}/systemTest")
 }
 
-task releaseDataManger(type: Exec, dependsOn: stopAndRemoveOldDockerSystemTestContainer) {
+task releaseDataManger(type: Exec, dependsOn: systemTest) {
     commandLine "${projectDir}/gradlew", '-b', 'getWarPublishWar.gradle', 'publish'
 }
-
-releaseDataManger.mustRunAfter systemTest
 
 task performanceTest(type: Test) {
     testClassesDir = sourceSets.performanceTest.output.classesDir
