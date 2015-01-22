@@ -211,7 +211,11 @@ task copyDockerFiles(type: Copy) {
     into 'build/docker'
 }
 
-task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "shadow","copyDockerFiles"]) {
+task getLatestReleasedWar(type: Exec, dependsOn: copyDockerFiles) {
+    commandLine "${projectDir}/gradlew", '-b', 'getLatestReleasedWar.gradle', 'getLatest'
+}
+
+task copyJarDocker(type: Copy, dependsOn: ["war", "jar", "shadow","getLatestReleasedWar"]) {
     from "build/libs"
     into 'build/docker'
 }
@@ -245,6 +249,8 @@ task runDockerContainer(type: Exec, dependsOn: "buildDockerContainer") {
     // to make a usb to serial adapter available: '--privileged', '-v', '/dev/ttyUSB0:/dev/ttyUSB0'
     commandLine '/usr/local/bin/docker', 'run', '-p', '3232:8080',  '-p', '3222:22', '--name', "datamanager-run-${version}", '-d', '-t', "datamanager:${version}"
 }
+
+
 
 task stopAndRemoveOldDockerSystemTestContainer(type: Exec) {
     def curUser = System.getenv('USER')
