@@ -82,7 +82,7 @@ dependencies {
     performanceTestCompile configurations.testCompile
     performanceTestRuntime configurations.testRuntime
     
-    systemTestWar "${group}:${name}:${version}"
+    systemTestWar "${group}:${name}:${version}-SNAPSHOT"
 }
 
 jacocoTestReport {
@@ -216,10 +216,9 @@ task copyDockerFilesSystemTestDocker(type: Copy) {
     into 'build/docker'
 }
 
-task copyJarSystemTestDocker(type: Copy, dependsOn: "copyDockerFilesSystemTestDocker") {
-    println "kees:" + configurations.systemTestWar.find { it.name.startsWith("DataManager") }
-    from configurations.systemTestWar.find { it.name.startsWith("DataManager") }
-    into 'build/docker'
+task copyJarSystemTestDocker(type: Exec, dependsOn: "copyDockerFilesSystemTestDocker") {
+    println "line = $projectDir}"
+    commandLine "${projectDir}/gradlew", '-b', 'getwar.gradle', 'copyJarSystemTestDockerTest'
 }
 
 task buildDockerContainer(type: Exec, dependsOn: "copyJarDocker") {
