@@ -22,7 +22,8 @@ configurations {
 }
 
 dependencies {
-    systemTestWar "com.soldev:DataManager:0.1-*:war"
+    systemTestWar group: 'com.soldev', name: 'DataManager', version: '0.1-*', ext: 'war'
+    //systemTestWar "com.soldev:DataManager:0.1-*"
 }
 
 task getLatest(type: Copy) {
