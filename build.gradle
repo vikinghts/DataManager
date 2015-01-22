@@ -1,30 +1,3 @@
-buildscript {
-    repositories {
-        maven { url 'http://jcenter.bintray.com' }
-        mavenCentral()
-        maven {
-            name 'Shadow'
-            url 'http://dl.bintray.com/content/johnrengelman/gradle-plugins'
-        }
-    }
-
-    dependencies {
-        classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.4'
-        classpath 'org.hidetake:gradle-ssh-plugin:0.3.0'
-        classpath 'org.gradle.plugins:shadow:0.7.4'
-
-    }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = "2.2.1"
-}
-
-version = 0.1
-group = 'com.soldev'
-
-apply plugin: 'cargo'
-apply plugin: 'ssh'
 apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'groovy'
@@ -33,13 +6,16 @@ apply plugin: 'jacoco'
 apply plugin: 'checkstyle'
 apply plugin: "sonar-runner"
 apply plugin: 'maven-publish'
-apply plugin: 'shadow'
 
+version = 0.1
+group = 'com.soldev'
 
+task wrapper(type: Wrapper) {
+    gradleVersion = "2.2.1"
+}
 
 repositories {
     mavenCentral()
-    maven { url "${artifactory_uploadContextUrl}/${ExternalRepo}/libs-snapshot-local" }
 }
 
 //find out howto make groovy directories in the systemTest
@@ -64,25 +40,21 @@ dependencies {
     compile 'org.hibernate:hibernate-core:4.3.6.Final'
     //needed to make jodatime work with hibernate!
     compile 'org.jadira.usertype:usertype.jodatime:2.0.1'
-
-    //compile 'javax.servlet:servlet-api:2.5'
     compile 'postgresql:postgresql:9.0-801.jdbc4'
     compile(group: 'log4j', name: 'log4j', version: '1.2.17')
     compile(group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.6.6') // van nexus apd
     compile(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.5')
-    testCompile localGroovy()
+    //testCompile localGroovy()
     testCompile "org.testng:testng:6.3.1"
     testCompile "junit:junit:4.9"
     testCompile "org.mockito:mockito-all:1.9.5"
-    integrationTestCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.5.2'
+    //integrationTestCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.5.2'
     integrationTestCompile configurations.testCompile
     integrationTestRuntime configurations.testRuntime
     systemTestCompile configurations.testCompile
     systemTestRuntime configurations.testRuntime
     performanceTestCompile configurations.testCompile
     performanceTestRuntime configurations.testRuntime
-    
-    systemTestWar "${group}:${name}:${version}-SNAPSHOT"
 }
 
 jacocoTestReport {
@@ -91,102 +63,15 @@ jacocoTestReport {
     }
 }
 
-sonarRunner {
-    sonarProperties {
-        property "sonar.jacoco.reportPath", "$buildDir/jacoco/test.exec"
-        property "sonar.jdbc.driverClassName", "com.postgresql.jdbc.Driver"
-        property "sonar.host.url", System.getenv("SonarUrl") ?: "dummy"
-        property "sonar.jdbc.url", System.getenv("SonarDB") ?: "dummy"
-        property "sonar.jdbc.username", System.getenv("SonarUser") ?: "dummy"
-        property "sonar.jdbc.password", System.getenv("SonarPass") ?: "dummy"
-    }
-}
-
-
 task "createProjectStructure" << {
     sourceSets*.java.srcDirs*.each { it.mkdirs() }
     sourceSets*.groovy.srcDirs*.each { it.mkdirs() }
     sourceSets*.resources.srcDirs*.each { it.mkdirs() }
 }
 
-jar {
-    manifest {
-        attributes("Implementation-Title": "Collect",
-                "Manifest-version": version,
-                "Main-Class": "com.soldev.Collect")
-    }
-}
-
-ext {
-    SSH_PRIVATE_KEY = "/.ssh/id_rsa"
-}
-
-ssh { knownHosts = allowAnyHosts }
-
-remotes {
-    odin {
-        role('tomcatServer')
-        identity = file(System.getProperty('user.home') + SSH_PRIVATE_KEY)
-        def envPort = System.getenv("DataManager") ?: "1"
-        port = envPort.toInteger()
-        host = System.getenv("DataManager") ?: "dummy"
-        user = System.getenv("DataManager") ?: "dummy"
-    }
-}
-
-task uploadFiles(type: SshTask, dependsOn: "jar") {
-    description "Upload the toBeTransPorted to the tomcat ROOT directory on the remote tomcat server"
-    session(remotes.odin) {
-        def localDir = "build/libs/DataCollector-0.1.jar"
-        def remoteDir = "/tmp"
-        put(localDir, remoteDir)
-    }
-}
-
-task runUploadedJar(type: SshTask, dependsOn: "uploadFiles") {
-
-    description "Create static directory on tomcat to service static content"
-    session(remotes.odin) {
-        execute("java -jar /tmp/DataManager-0.1.jar")
-    }
-}
-
-
 artifacts{
     archives war
 }
-
-uploadArchives {
-    repositories {
-        flatDir {
-            dirs 'build/repos'
-        }
-    }
-}
-
-
-publishing {
-    publications {
-        maven(MavenPublication){
-            from components.web
-            groupId = project.group
-            version = project.version + '-SNAPSHOT'
-        }
-    }
-    repositories {
-        maven {
-            url "${artifactory_uploadContextUrl}/${ExternalRepo}/libs-snapshot-local"
-            credentials {
-                logger.quiet ("url = ${artifactory_uploadContextUrl}/${ExternalRepo}/libs-snapshot-local")
-                logger.quiet("artifactory username = ${System.getenv().artifactory_push_user}")
-                username = "${System.getenv().artifactory_push_user}"
-                password = "${System.getenv().artifactory_push_password}"
-            }
-        }
-    }
-}
-
-
 
 task stopAndRemoveOldDockerContainer(type: Exec) {
     def curUser = System.getenv('USER')
@@ -306,7 +191,35 @@ task integrationTest(type: Test) {
 }
 
 task liveTestGroup(dependsOn: ['systemTest', 'performanceTest', 'integrationTest'])
-//to start/stop tomcat for test runs
-liveTestGroup.dependsOn war, cargoStartLocal
-liveTestGroup.finalizedBy cargoStopLocal
 
+publishing {
+    publications {
+        maven(MavenPublication){
+            from components.web
+            groupId = project.group
+            version = project.version + '-SNAPSHOT'
+        }
+    }
+    repositories {
+        maven {
+            url "${artifactory_uploadContextUrl}/${ExternalRepo}/libs-snapshot-local"
+            credentials {
+                logger.quiet ("url = ${artifactory_uploadContextUrl}/${ExternalRepo}/libs-snapshot-local")
+                logger.quiet("artifactory username = ${System.getenv().artifactory_push_user}")
+                username = "${System.getenv().artifactory_push_user}"
+                password = "${System.getenv().artifactory_push_password}"
+            }
+        }
+    }
+}
+
+sonarRunner {
+    sonarProperties {
+        property "sonar.jacoco.reportPath", "$buildDir/jacoco/test.exec"
+        property "sonar.jdbc.driverClassName", "com.postgresql.jdbc.Driver"
+        property "sonar.host.url", System.getenv("SonarUrl") ?: "dummy"
+        property "sonar.jdbc.url", System.getenv("SonarDB") ?: "dummy"
+        property "sonar.jdbc.username", System.getenv("SonarUser") ?: "dummy"
+        property "sonar.jdbc.password", System.getenv("SonarPass") ?: "dummy"
+    }
+}
