@@ -22,7 +22,7 @@ configurations {
 }
 
 dependencies {
-    systemTestWar "com.soldev:DataManager:0.1-*"
+    systemTestWar "com.soldev:DataManager:0.1-*:war"
 }
 
 task getLatest(type: Copy) {
