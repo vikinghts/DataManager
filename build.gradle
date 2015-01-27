@@ -18,7 +18,6 @@ repositories {
     mavenCentral()
 }
 
-//find out howto make groovy directories in the systemTest
 sourceSets {
     systemTest
     performanceTest
@@ -32,6 +31,7 @@ configurations {
 
 dependencies {
     compile localGroovy()
+    compile 'asm:asm:3.3.1'
     compile 'com.sun.jersey:jersey-bundle:1.17.1'
     compile "joda-time:joda-time:2.2"
     compile 'org.json:json:20131018'
