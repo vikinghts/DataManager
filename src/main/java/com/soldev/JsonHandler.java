@@ -107,6 +107,16 @@ public class JsonHandler {
     }
 
 
+    @GET
+    @Path("/listMeasurePointsToday")
+    public Response listMeasurePointsToday() {
+        DataManager dm = DataManager.getInstance();
+
+        String output = dm.listMeasurePointsToday();
+
+        return Response.status(STATUS_OK).entity(output).build();
+    }
+
 }
 
 

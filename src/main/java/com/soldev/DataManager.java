@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -24,6 +25,7 @@ public class DataManager {
     private static final Logger LOG = LoggerFactory.getLogger(DataManager.class);
     private static SessionFactory factory;
     private static DataManager instance = null;
+    private List<MeasurePoint> MeasurePointList = new ArrayList<MeasurePoint>();
 
     private DataManager() {
         // Exists only to defeat instantiation.
@@ -45,7 +47,30 @@ public class DataManager {
         } catch (Exception ex) {
             LOG.error("Failed to create sessionFactory object." + ex);
         }
+        InitAllMeasurePoints();
     }
+
+    public boolean InitAllMeasurePoints() {
+        LOG.debug("DataManager InitAllMeasurePoints");
+        Session session = factory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            MeasurePointList = session.createQuery("FROM MeasurePoint").list();
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            LOG.error("Failed to listMeasurePoints :" + e);
+        } finally {
+            session.close();
+        }
+        Integer nrOfElements = MeasurePointList.size();
+        LOG.debug("listMeasurePoints contains these elements : " + nrOfElements.toString());
+        return true;
+    }
+
 
     /* Method to CREATE an measurePoint in the database */
     public Integer addMeasurePoint(int tDPower, int tPPower, int cpower, int tGas, DateTime mDateTime) {
@@ -121,6 +146,34 @@ public class DataManager {
         } finally {
             session.close();
         }
+        //TODO Dirty fix by using json object
+        response = response.substring(0, response.length() - 1);
+        LOG.debug(response + "]}");
+        return response.concat("]}");
+    }
+
+    public String listMeasurePointsToday() {
+        DateTime now = new DateTime();
+        return listMeasurePointsObj(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth());
+    }
+
+    public String listMeasurePointsObj(Integer measureYear, Integer measureMonth, Integer measureDay) {
+        String response = "{\"" + ALL_MEASURE_POINTS + "\":[";
+        for (Object measurePoint1 : MeasurePointList) {
+            MeasurePoint measurePoint = (MeasurePoint) measurePoint1;
+            //Integer yearNow = measurePoint.getMeasureDateTime().getYear();
+            //Integer monthNow = measurePoint.getMeasureDateTime().getMonthOfYear();
+            //Integer dayOfYear = measurePoint.getMeasureDateTime().getDayOfYear();
+            //LOG.debug("found year : " + yearNow.toString() + " month : " + monthNow.toString() +  " day : " + dayOfYear.toString() );
+            if ((measurePoint.getMeasureDateTime().getDayOfMonth() == measureDay)
+                    && (measurePoint.getMeasureDateTime().getMonthOfYear() == measureMonth)
+                    && (measurePoint.getMeasureDateTime().getYear() == measureYear)) {
+                Integer curPower = measurePoint.getCurrentPower();
+                response = response + ("{" + ESC_QUOTE + MEASURE_DATE_TIME + ESC_QUOTE + ":" + ESC_QUOTE + measurePoint.getMeasureDateTime().toString() + ESC_QUOTE + ",");
+                response = response + (ESC_QUOTE + CURRENT_POWER + ESC_QUOTE + ":" + curPower.toString() + "},");
+            }
+        }
+        LOG.debug("listMeasurePoints today : " + measureDay.toString() + "-" + measureMonth.toString() + "-" + measureYear.toString());
         //TODO Dirty fix by using json object
         response = response.substring(0, response.length() - 1);
         LOG.debug(response + "]}");
