@@ -82,6 +82,8 @@ public class DataManager {
             MeasurePoint measurePoint = new MeasurePoint(tDPower, tPPower, cpower, tGas, mDateTime);
             measurePointID = (Integer) session.save(measurePoint);
             tx.commit();
+            //also add to in memory not only to the database
+            MeasurePointList.add(measurePoint);
         } catch (HibernateException e) {
             if (tx != null) {
                 tx.rollback();
